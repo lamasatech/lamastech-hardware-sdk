@@ -5,6 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.lamasatech.kioskhardware.products.DeviceManager
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,5 +17,14 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+//        DeviceManager.instance?.device?.apply {
+//            setTurnOffOnAlarm("","")
+//            reboot(this@MainActivity)
+//            setBrightness(this@MainActivity,50)
+//            this.scheduleReboot()
+//            this.turnOff()
+//        }
+
     }
 }
