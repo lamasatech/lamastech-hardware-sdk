@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-
+    implementation(files("libs/kioskhardware-0.0.17.aar"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
