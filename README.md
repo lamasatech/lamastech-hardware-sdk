@@ -46,7 +46,7 @@ class AppModule {
 
 ## Supported Devices
 
-| Name | Model |
+| Category | Model |
 |--|--|
 | Zentron | rk3288 , LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
 | Visipoint15 | Visipoint 15 |
