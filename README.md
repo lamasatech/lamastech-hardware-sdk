@@ -44,6 +44,18 @@ class AppModule {
 }
 ```
 
+## Supported Devices
+
+| Name | Model |
+|--|--|
+| Zentron | rk3288 , LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
+| Visipoint15 | Visipoint 15 |
+|S3568 | VersiV1s3568 , MuroDv1s3568 |
+| OctopusA83 | Octopus A83 F1 |
+| 3288 | 3288 |
+| 3280 | 3280 |
+
+
 ## Avaliable Function 
 
 | Fun | Supported Device | Doc |
@@ -366,16 +378,6 @@ Set WiFi connection account password
 
 - pls use application context with all functions
 
-## Supported Devices
-
-| Name | Model |
-|--|--|
-| Zentron | rk3288 , LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
-| Visipoint15 | Visipoint 15 |
-|S3568 | VersiV1s3568 , MuroDv1s3568 |
-| OctopusA83 | Octopus A83 F1 |
-| 3288 | 3288 |
-| 3280 | 3280 |
 
 
 
