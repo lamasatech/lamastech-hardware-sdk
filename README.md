@@ -1,5 +1,6 @@
 
 
+
 ## How to Add Lib to you project
 
 1. Add aar to libs dir
@@ -57,6 +58,8 @@ class AppModule {
 
 
 ## Avaliable Function 
+
+- pls use application context with all functions
 
 | Fun | Supported Device | Doc |
 |--|--|--|
@@ -376,9 +379,67 @@ Set WiFi connection account password
 
 ---
 
-- pls use application context with all functions
+``` fun setSystemBootApp(packageName:String): Int ```
 
+Set up applications that need to start automatically at boot
 
+-   If the set application does not have a desktop icon, you need to specify the class name
+    
+-   Example: Specify the package name android.app.smdt.apidemo Specify the class name android.app.smdt.apidemo/.MainActivity
+
+| Parameters | Description |
+|:--|:--|
+| packageName | Application package name (when you need to specify a class name, add "/" in the middle followed by the class name) |
+
+<br>
+
+| Return | Description |
+|:--|:--|
+| Int | Call result, refer to error code |
+
+---
+
+``` fun getSystemBootApp(): String? ```
+
+Get applications that need to start automatically at boot
+
+| Return | Description |
+|:--|:--|
+| String | Application package name |
+
+---
+
+``` fun setDaemonsActivity(packageName: String, timeMillisecond: Long, broadcastEnable: Boolean) ```
+
+Set up daemon
+
+-   If the guarded application does not have a desktop icon, you need to specify the class name
+    
+-   Example: Specify the package name android.app.smdt.apidemo Specify the class name android.app.smdt.apidemo/.MainActivity
+    
+-   The global broadcast is "android.app.smdt.PROTECT_CHECK"
+
+| Parameters | Description |
+|:--|:--|
+| packageName | Set the application package name that needs to be protected (when you need to specify a class name, add "/" in the middle followed by the class name) |
+| timeMillisecond | How long does it take to re-hang the application after it exits the front end, in milliseconds |
+| broadcastEnable | Whether a global broadcast needs to be issued when the application exits |
+
+<br>
+
+| Return | Description |
+|:--|:--|
+| Int | Call result, refer to error code |
+
+---
+
+``` fun getDaemonsActivity(): String ```
+
+Get the currently guarded application package name
+
+| Return | Description |
+|:--|:--|
+| String | Guarded application package name |
 
 
 
