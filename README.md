@@ -49,7 +49,7 @@ class AppModule {
 
 | Category | Model |
 |--|--|
-| Zentron | rk3288 , LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
+| Zentron | LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
 |S3568 | VersiV1s3568 , MuroDv1s3568 |
 
 
