@@ -50,11 +50,7 @@ class AppModule {
 | Category | Model |
 |--|--|
 | Zentron | rk3288 , LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
-| Visipoint15 | Visipoint 15 |
 |S3568 | VersiV1s3568 , MuroDv1s3568 |
-| OctopusA83 | Octopus A83 F1 |
-| 3288 | 3288 |
-| 3280 | 3280 |
 
 
 ## Avaliable Function 
@@ -441,5 +437,18 @@ Get the currently guarded application package name
 |:--|:--|
 | String | Guarded application package name |
 
+
+## Global error code
+
+| name | code | description |
+|:--|:--|:--|
+| RET_API_OK | 0 | success |
+| RET_API_ERR_NG | -1 | not support|
+| RET_API_ERR_PARA | -2 | Wrong parameter |
+| RET_API_ERR_FILE_EXISTS | -3 | file does not exist |
+| RET_API_ERR_PERMISSION_DENIED | -4 | permission denied |
+| RET_API_ERR_EXCEPTION | -5 | Exception thrown |
+| RET_API_ERR_PROPERTIES_EXISTS | -6 | Property does not exist |
+| RET_API_ERR_METHOD | -7 | method does not exist |
 
 
