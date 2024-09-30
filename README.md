@@ -375,7 +375,7 @@ Set WiFi connection account password
 
 ---
 
-``` fun setSystemBootApp(packageName:String): Int ```
+``` fun setSystemBootApp(packageName:String): Int ``` *supported by* **S3568**
 
 Set up applications that need to start automatically at boot
 
@@ -395,7 +395,7 @@ Set up applications that need to start automatically at boot
 
 ---
 
-``` fun getSystemBootApp(): String? ```
+``` fun getSystemBootApp(): String? ``` *supported by* **S3568**
 
 Get applications that need to start automatically at boot
 
@@ -405,7 +405,7 @@ Get applications that need to start automatically at boot
 
 ---
 
-``` fun setDaemonsActivity(packageName: String, timeMillisecond: Long, broadcastEnable: Boolean) ```
+``` fun setDaemonsActivity(packageName: String, timeMillisecond: Long, broadcastEnable: Boolean) ``` *supported by* **S3568**
 
 Set up daemon
 
@@ -429,7 +429,7 @@ Set up daemon
 
 ---
 
-``` fun getDaemonsActivity(): String ```
+``` fun getDaemonsActivity(): String ``` *supported by* **S3568**
 
 Get the currently guarded application package name
 
