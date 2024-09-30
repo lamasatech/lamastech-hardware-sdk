@@ -1,6 +1,7 @@
 
 
 
+
 ## How to Add Lib to you project
 
 1. Add aar to libs dir
@@ -55,8 +56,6 @@ class AppModule {
 
 ## Avaliable Function 
 
-- pls use application context with all functions
-
 | Fun | Supported Device | Doc |
 |--|--|--|
 | setTurnOffOnAlarm(offTime :String, onTime :String)| All | turn device off and on in time , use 24 hours time format like "11:00" , "20:00"  |
@@ -75,8 +74,8 @@ class AppModule {
 | smdtSetEthIPAddress | All |  |
 
 
-#### Net Function for  S3568 only
-``` fun netGetMacAddress(type: String?): String? ```
+
+``` fun netGetMacAddress(type: String?): String? ```  *supported by* **S3568**
 
  Get the MAC address of the network card device
  -   The obtained Wifi MAC address is the local MAC address
@@ -92,15 +91,16 @@ class AppModule {
 | String | MAC address |
 
 ---
-``` fun netGetCurrentNetType(): String? ```
+``` fun netGetCurrentNetType(): String? ``` *supported by* **S3568**
 
 Get the type of current network connection
+
 | Return | Description |
 |:--|:--|
 | String? | `WIFI`:WIFI `ETH`: Ethernet `MOBILE`: mobile network `UNKNOWN`: unknown type |
 
 ---
-``` fun netSetNetWork(type: String?, enable: Boolean): Int ```
+``` fun netSetNetWork(type: String?, enable: Boolean): Int ``` *supported by* **S3568**
 
 Set network switch status
 
@@ -116,7 +116,7 @@ Set network switch status
 | Int | Call result, refer to error code |
 
 ---
-``` fun netGetNetWork(type: String?): Int ```
+``` fun netGetNetWork(type: String?): Int ``` *supported by* **S3568**
 
 Get network switch status
 
@@ -131,7 +131,7 @@ Get network switch status
 | Int | 1:Open 0:Close |
 
 ---
-``` fun netSetNetWorkModel(type: String?, model: Int, ip: String?, gaw: String?, mask: String?, dns1: String?, dns2: String? ): Int ```
+``` fun netSetNetWorkModel(type: String?, model: Int, ip: String?, gaw: String?, mask: String?, dns1: String?, dns2: String? ): Int ``` *supported by* **S3568**
 
 Set network connection mode
 - This interface WIFI modifies the currently connected WIFI. If WIFI is not connected, the mode cannot be switched.
@@ -153,7 +153,7 @@ Set network connection mode
 | Int | Call result, refer to error code |
 
 ---
-``` fun netGetNetWorkModel(var1: String?): Int ```
+``` fun netGetNetWorkModel(var1: String?): Int ``` *supported by* **S3568**
 
 Get network connection mode
 
@@ -167,7 +167,7 @@ Get network connection mode
 |:--|:--|
 | Int | Network mode: 0 dynamic 1 static |
 ---
-``` fun netGetWifiRssi(level: Int): Int ```
+``` fun netGetWifiRssi(level: Int): Int ``` *supported by* **S3568**
 
 Get WIFI connection signal
 
@@ -181,7 +181,7 @@ Get WIFI connection signal
 |:--|:--|
 | Int | Current signal level |
 ---
-``` fun netSetWifiAp(enable: Boolean): Int ```
+``` fun netSetWifiAp(enable: Boolean): Int ``` *supported by* **S3568**
 
 Set WIFI hotspot switch status
 - WIFI hotspot and WIFI switch are mutually exclusive. After turning on the hotspot, WIFI will be automatically turned off.
@@ -197,14 +197,14 @@ Set WIFI hotspot switch status
 | Int | Call result, refer to error code |
 
 ---
-``` fun netGetWifiAp(): Int ```
+``` fun netGetWifiAp(): Int ``` *supported by* **S3568**
 
 | Return | Description |
 |:--|:--|
 | Int | 1:Open 0:Close |
 
 ---
-``` fun netSetNetworkProtect( enable: Boolean, type: Int, time: Long, ipInternet: String?, ipIntranet: String?, logPath: String?, reboot: Boolean): Int ```
+``` fun netSetNetworkProtect( enable: Boolean, type: Int, time: Long, ipInternet: String?, ipIntranet: String?, logPath: String?, reboot: Boolean): Int ``` *supported by* **S3568**
 
 Set network guard switch status
 -   The type type defaults to automatic: when it detects that the current network is unavailable, it will try to repair all network types.
@@ -238,7 +238,7 @@ Set network guard switch status
 | Int | Call result, refer to error code |
 
 ---
-``` fun netGetNetworkProtectEnable(): Int ```
+``` fun netGetNetworkProtectEnable(): Int ``` *supported by* **S3568**
 
 Get network guard switch status
 
@@ -247,7 +247,7 @@ Get network guard switch status
 | Int | 1:Open 0:Close |
 
 ---
-``` fun netGetNetworkProtectConfig(): List<String?>? ```
+``` fun netGetNetworkProtectConfig(): List<String?>? ``` *supported by* **S3568**
 
 Get network daemon configuration information
 
@@ -256,7 +256,7 @@ Get network daemon configuration information
 | List<String?>? | array order 0:Type 1: Interval time 2: External IP address 3: Intranet IP address 4:Log path 5: Is it possible to restart after repairing the network failure? |
 
 ---
-``` fun netGetImeiNumber(): String? ```
+``` fun netGetImeiNumber(): String? ``` *supported by* **S3568**
 
 Get IMEI number
 
@@ -265,7 +265,7 @@ Get IMEI number
 | String | IMEI number |
 
 ---
-```fun netGetIccidNumber(): String? ```
+```fun netGetIccidNumber(): String? ``` *supported by* **S3568**
 
 Get ICCID number
 
@@ -274,7 +274,7 @@ Get ICCID number
 | String | ICCID number |
 
 ---
-``` fun netGetImsiNumber(): String? ```
+``` fun netGetImsiNumber(): String? ``` *supported by* **S3568**
 
 Get IMSI number
 
@@ -283,7 +283,7 @@ Get IMSI number
 | String | IMSI number |
 
 ---
-``` fun netSetNetworkPriority(types: Array<String?>?): Int ```
+``` fun netSetNetworkPriority(types: Array<String?>?): Int ``` *supported by* **S3568**
 
 Set network priority
 -   types sorts network type strings from high to low, for example: new String[]{"eth0", "wlan0", "mobile"}; Ethernet/WIFI/mobile network
@@ -303,7 +303,7 @@ Set network priority
 | Int | Call result, refer to error code |
 
 ---
-``` fun netGetNetworkPriority(): Array<String?>? ```
+``` fun netGetNetworkPriority(): Array<String?>? ``` *supported by* **S3568**
 
 Get network priority
 - Return value Sort network type strings from high to low, for example: new String[]{"eth0", "wlan0", "mobile"}; Ethernet/WIFI/mobile network
@@ -313,7 +313,7 @@ Get network priority
 | Array<String?>? | Network prioritization |
 
 ---
-``` fun netGetNetworkMultiEnable(): Int ```
+``` fun netGetNetworkMultiEnable(): Int ``` *supported by* **S3568**
 
 Get the status of multi-network coexistence switch
 
@@ -321,7 +321,7 @@ Get the status of multi-network coexistence switch
 |:--|:--|
 | Int | 1:Open 0:Close |
 ---
-``` fun netSetNetworkMultiEnable(enable: Boolean): Int ```
+``` fun netSetNetworkMultiEnable(enable: Boolean): Int ``` *supported by* **S3568**
 
 Set the multi-network coexistence switch status
 -   Pay attention to use it in conjunction with network priority. The network type for accessing the external network is put first.
@@ -339,7 +339,7 @@ Set the multi-network coexistence switch status
 | Int | Call result, refer to error code |
 
 ---
-``` fun netGetNetWorkInf(type: String?): NetworkInfoData? ```
+``` fun netGetNetWorkInf(type: String?): NetworkInfoData? ``` *supported by* **S3568**
 
 Get currently connected network information
 
@@ -354,7 +354,7 @@ Get currently connected network information
 | NetworkInfoData | Object that holds network information |
 
 ---
-```fun netSetWifiConnect(account: String?, pwd: String?, type: Int, mode: Int, info: NetworkInfoData?): Int ```
+```fun netSetWifiConnect(account: String?, pwd: String?, type: Int, mode: Int, info: NetworkInfoData?): Int ``` *supported by* **S3568**
 
 Set WiFi connection account password
 -   It takes effect in real time and will connect to WIFI after calling.
