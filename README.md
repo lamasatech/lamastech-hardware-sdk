@@ -6,7 +6,7 @@
 
 1. Add aar to libs dir
 2. Inside build.gradle add
-` implementation(files("libs/kioskhardware-lamasatech-0.0.20.aar")) `
+` implementation(files("libs/kioskhardware-lamasatech-0.0.47.aar")) `
 3. Create App class
 ```
 class App : Application() {  
