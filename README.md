@@ -63,17 +63,112 @@ class AppModule {
 | setBrightness(context: Context,brightness: Int) | All | change device brightness value should be in range from 0 to 100 |
 | scheduleReboot(context: Context, delay: Long) | All | reboot device in schedule time [ delay unit is SECONDS ] |
 | turnOff(context: Context): Int | All | turn off device |
-| getCurrentNetType | All |  |
-| setTimeFromNetwork | All |  |
-| smdtSetMobileDataEnabled | All |  |
-| smdtGetEthIPAddress | All |  |
-| smdtGetEthMacAddress | All |  |
-| getWifiInterface | All |  |
-| smdtSetEthernetState | All |  |
-| smdtGetEthernetState | All |  |
-| smdtSetEthIPAddress | All |  |
+---
 
+``` fun getCurrentNetType(): String ``` *supported by* **ALL**
 
+Get the currently net type
+
+| Return | Description |
+|:--|:--|
+| String | |
+
+---
+
+``` fun setTimeFromNetwork(autotiestatus: Boolean, context: Context?): Boolean ``` *supported by* **ALL**
+
+Set time from network
+
+| Parameters | Description |
+|:--|:--|
+| autotiestatus |  |
+
+<br>
+
+| Return | Description |
+|:--|:--|
+| Boolean |  |
+
+---
+
+``` fun smdtSetMobileDataEnabled(context: Context?, enabled: Boolean): Boolean ``` *supported by* **ALL**
+
+enable and disable mobile data
+
+| Parameters | Description |
+|:--|:--|
+| enabled | true to enable false to disable |
+
+<br>
+
+| Return | Description |
+|:--|:--|
+| Boolean |  |
+
+---
+
+``` fun smdtGetEthIPAddress(): String? ``` *supported by* **ALL**
+
+Get ethernet ip address
+
+| Return | Description |
+|:--|:--|
+| String | ip address |
+
+---
+
+``` fun smdtGetEthMacAddress(): String? ``` *supported by* **ALL**
+
+Get ethernet ip mac address
+
+| Return | Description |
+|:--|:--|
+| String | mac address |
+
+---
+
+``` fun getWifiInterface(): WifiUtils? ``` *supported by* **ALL**
+
+Get 
+
+| Return | Description |
+|:--|:--|
+| WifiUtils? |  |
+
+---
+
+``` fun smdtSetEthernetState(enable: Boolean)``` *supported by* **ALL**
+
+Get the currently guarded application package name
+
+| Return | Description |
+|:--|:--|
+| String | Guarded application package name |
+
+---
+
+``` fun smdtGetEthernetState(): Boolean ``` *supported by* **ALL**
+
+Get ethernet state
+
+| Return | Description |
+|:--|:--|
+| Boolean |  |
+
+---
+
+``` fun smdtSetEthIPAddress(mIpaddr: String?, mMask: String?, mGw: String?, mDns: String?)``` *supported by* **ALL**
+
+ 
+
+| Parameters | Description |
+|:--|:--|
+| mIpaddr | |
+| mMask | |
+| mGw | |
+| mDns | |
+
+---
 
 ``` fun netGetMacAddress(type: String?): String? ```  *supported by* **S3568**
 
