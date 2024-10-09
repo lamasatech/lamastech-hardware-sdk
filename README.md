@@ -6,7 +6,7 @@
 
 1. Add aar to libs dir
 2. Inside build.gradle add
-` implementation(files("libs/kioskhardware-lamasatech-0.0.47.aar")) `
+` implementation(files("libs/kioskhardware-lamasatech-0.0.48.aar")) `
 3. Create App class
 ```
 class App : Application() {  
@@ -50,8 +50,8 @@ class AppModule {
 
 | Category | Model |
 |--|--|
-| Zentron | LT-Zentron8 , LT-Zentron15 , LD-AITemp , rk3288_tdx |
-|S3568 | VersiV1s3568 , MuroDv1s3568 |
+| Zentron | All Zentron series |
+|S3568 | VersiV1s3568 , VersiV2s3568 , MuroDv1s3568 , MuroDv2s3568 |
 
 
 ## Avaliable Function 
