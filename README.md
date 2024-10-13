@@ -533,6 +533,37 @@ Get the currently guarded application package name
 | String | Guarded application package name |
 
 
+---
+
+``` fun setStatusBar(context: Context, enable: Boolean): Int ``` *supported by* **ALL**
+
+Show or hide status bar
+
+| Return | Description |
+|:--|:--|
+| Boolean | true for show, false for hide |
+
+---
+
+``` fun setStatusBarDrag(enable: Boolean): Int ``` *supported by* **ALL**
+
+Enable or disable status bar drag
+
+| Return | Description |
+|:--|:--|
+| Boolean | true to enable drag , false to disable |
+
+---
+
+``` fun setNavigationBar(enable: Boolean): Int ``` *supported by* **ALL**
+
+Show or hide navigation bar
+
+| Return | Description |
+|:--|:--|
+| Boolean | true for show, false for hide |
+
+
 ## Global error code
 
 | name | code | description |
@@ -545,5 +576,6 @@ Get the currently guarded application package name
 | RET_API_ERR_EXCEPTION | -5 | Exception thrown |
 | RET_API_ERR_PROPERTIES_EXISTS | -6 | Property does not exist |
 | RET_API_ERR_METHOD | -7 | method does not exist |
+
 
 
