@@ -539,7 +539,7 @@ Get the currently guarded application package name
 
 Show or hide status bar
 
-| Return | Description |
+| Parameters | Description |
 |:--|:--|
 | Boolean | true for show, false for hide |
 
@@ -549,7 +549,7 @@ Show or hide status bar
 
 Enable or disable status bar drag
 
-| Return | Description |
+| Parameters | Description |
 |:--|:--|
 | Boolean | true to enable drag , false to disable |
 
@@ -559,7 +559,7 @@ Enable or disable status bar drag
 
 Show or hide navigation bar
 
-| Return | Description |
+| Parameters | Description |
 |:--|:--|
 | Boolean | true for show, false for hide |
 
