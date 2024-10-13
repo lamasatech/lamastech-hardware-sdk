@@ -545,7 +545,7 @@ Show or hide status bar
 
 ---
 
-``` fun setStatusBarDrag(enable: Boolean): Int ``` *supported by* **ALL**
+``` fun setStatusBarDrag(enable: Boolean): Int ``` *supported by* **S3568**
 
 Enable or disable status bar drag
 
@@ -555,7 +555,7 @@ Enable or disable status bar drag
 
 ---
 
-``` fun setNavigationBar(enable: Boolean): Int ``` *supported by* **ALL**
+``` fun setNavigationBar(enable: Boolean): Int ``` *supported by* **S3568**
 
 Show or hide navigation bar
 
