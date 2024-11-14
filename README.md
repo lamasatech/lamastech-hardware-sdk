@@ -567,23 +567,30 @@ Show or hide navigation bar
 
 ``` fun setDisplayRotation(screenId: Int, degree: Int) ``` *supported by* **ALL**
 
-change display rotation
+Set screen rotation angle
 
 | Parameters | Description |
 |:--|:--|
-| Int | degree |
-| Int | screen id |
+| Int | Screen ID 0: Main screen 1: Secondary screen |
+| Int | Rotation angle:0/90/180/270 |
 
 ---
 
-``` fun getDisplayRotation(screenId: Int) ``` *supported by* **ALL**
+``` fun getDisplayRotation(screenId: Int) : Int ``` *supported by* **ALL**
 
-get screen rotation
+ Get screen rotation angle
+
+ The main and secondary screens depend on the system and screen parameter definitions, not on the number of screens. For example, set the main screen LVDS and the secondary screen HDMI. Connect to 1 HDMI screen, HDMI is also a secondary screen, and the parameters that need to be passed in are also 1 secondary screen.
 
 | Parameters | Description |
 |:--|:--|
-| Int | screen id |
+| Int | Screen ID 0: Main screen 1: Secondary screen |
 
+| Return | Description |
+|:--|:--|
+| Int | Rotation angle:0/90/180/270 |
+
+---
 
 ## Global error code
 
