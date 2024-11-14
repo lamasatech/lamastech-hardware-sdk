@@ -563,6 +563,27 @@ Show or hide navigation bar
 |:--|:--|
 | Boolean | true for show, false for hide |
 
+---
+
+``` fun setDisplayRotation(screenId: Int, degree: Int) ``` *supported by* **ALL**
+
+change display rotation
+
+| Parameters | Description |
+|:--|:--|
+| Int | degree |
+| Int | screen id |
+
+---
+
+``` fun getDisplayRotation(screenId: Int) ``` *supported by* **ALL**
+
+get screen rotation
+
+| Parameters | Description |
+|:--|:--|
+| Int | screen id |
+
 
 ## Global error code
 
