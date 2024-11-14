@@ -91,7 +91,7 @@ Set time from network
 
 ---
 
-``` fun smdtSetMobileDataEnabled(context: Context?, enabled: Boolean): Boolean ``` *supported by* **ALL**
+``` fun setMobileDataEnabled(context: Context?, enabled: Boolean): Boolean ``` *supported by* **ALL**
 
 enable and disable mobile data
 
@@ -107,7 +107,7 @@ enable and disable mobile data
 
 ---
 
-``` fun smdtGetEthIPAddress(): String? ``` *supported by* **ALL**
+``` fun getEthIPAddress(): String? ``` *supported by* **ALL**
 
 Get ethernet ip address
 
@@ -117,7 +117,7 @@ Get ethernet ip address
 
 ---
 
-``` fun smdtGetEthMacAddress(): String? ``` *supported by* **ALL**
+``` fun getEthMacAddress(): String? ``` *supported by* **ALL**
 
 Get ethernet ip mac address
 
@@ -137,7 +137,7 @@ Get
 
 ---
 
-``` fun smdtSetEthernetState(enable: Boolean)``` *supported by* **ALL**
+``` fun setEthernetState(enable: Boolean)``` *supported by* **ALL**
 
 Get the currently guarded application package name
 
@@ -147,7 +147,7 @@ Get the currently guarded application package name
 
 ---
 
-``` fun smdtGetEthernetState(): Boolean ``` *supported by* **ALL**
+``` fun getEthernetState(): Boolean ``` *supported by* **ALL**
 
 Get ethernet state
 
@@ -157,7 +157,7 @@ Get ethernet state
 
 ---
 
-``` fun smdtSetEthIPAddress(mIpaddr: String?, mMask: String?, mGw: String?, mDns: String?)``` *supported by* **ALL**
+``` fun setEthIPAddress(mIpaddr: String?, mMask: String?, mGw: String?, mDns: String?)``` *supported by* **ALL**
 
  
 
