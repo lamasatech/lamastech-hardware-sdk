@@ -506,7 +506,7 @@ Set up daemon
 
 -   If the guarded application does not have a desktop icon, you need to specify the class name
     
--   Example: Specify the package name android.app.smdt.apidemo Specify the class name android.app.smdt.apidemo/.MainActivity
+-   Example: Specify the package name com.google.android.gallery3d Specify the class name com.google.android.gallery3d/.MainActivity
     
 -   The global broadcast is "android.app.smdt.PROTECT_CHECK"
 
