@@ -6,7 +6,7 @@
 
 1. Add aar to libs dir
 2. Inside build.gradle add
-` implementation(files("libs/kioskhardware-lamasatech-0.0.54.aar")) `
+` implementation(files("libs/kioskhardware-lamasatech-0.0.55.aar")) `
 3. Create App class
 ```
 class App : Application() {  
@@ -591,6 +591,55 @@ Set screen rotation angle
 | Int | Rotation angle:0/90/180/270 |
 
 ---
+
+``` fun setLcdBackLightEnable(screenId: Int, enable: Boolean) : Int ``` *supported by* **S3568**
+
+ Set the screen backlight switch
+ 
+| Parameters | Description |
+|:--|:--|
+| Int | Screen ID 0: Main screen 1: Secondary screen |
+| Boolean | true: on, false: off |
+
+| Return | Description |
+|:--|:--|
+| Int | Rotation angle:0/90/180/270 |
+
+---
+``` fun getLcdBackLightEnable(screenId: Int) : Int ``` *supported by* **S3568**
+
+Get the screen backlight switch status
+
+| Parameters | Description |
+|:--|:--|
+| Int | Screen ID 0: Main screen 1: Secondary screen |
+
+| Return | Description |
+|:--|:--|
+| Int | 1:on 0:off |
+
+---
+``` fun setLcdBrightness(screenId: Int, brightness: Int): Int ``` *supported by* **S3568**
+
+Set the screen backlight brightness
+
+- The frequency parameter is used for the external PWM interface. You can first obtain the default frequency and set it directly.
+- On some platforms, such as RK3568, the second backlight does not use the external PWM (MCU) interface, but uses the system default interface. There is no need to pass in the frequency, and it will not change even if it is passed in.
+- Before setting, obtain the maximum and minimum brightness values ​​of the corresponding interface and then set them.
+- Set the system default interface. It is recommended to use the parameter save to save the data to the database after the operation. This can reduce the number of database operations.
+
+
+| Parameters | Description |
+|:--|:--|
+| Int | Screen ID 0: Main screen 1: Secondary screen |
+| Int | Brightness value |
+
+| Return | Description |
+|:--|:--|
+| Int | refer to error code |
+
+---
+
 
 ## Global error code
 
