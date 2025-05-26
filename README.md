@@ -639,7 +639,28 @@ Set the screen backlight brightness
 | Int | refer to error code |
 
 ---
+``` fun getScreenShot(filePath: String) : Int ``` *supported by* **S3568**
 
+Take a screenshot and save it to the specified path
+
+| Parameters | Description |
+|:--|:--|
+| filePath | Picture saving path |
+
+| Return | Description |
+|:--|:--|
+| Int | refer to error code |
+
+---
+``` fun getScreenShotBitmap() : Bitmap ``` *supported by* **S3568**
+
+Take a screenshot and return the image in bitmap format
+
+| Return | Description |
+|:--|:--|
+| Bitmap | Image data |
+
+---
 
 ## Global error code
 
