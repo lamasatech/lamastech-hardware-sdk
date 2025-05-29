@@ -661,6 +661,15 @@ Take a screenshot and return the image in bitmap format
 | Bitmap | Image data |
 
 ---
+``` fun silentInstall(context: Context, path: String) ``` *supported by* **All**
+ 
+ Install apps silently
+
+| Parameters | Description |
+|:--|:--|
+| String | The path of the application to be installed |
+
+---
 
 ## Global error code
 
