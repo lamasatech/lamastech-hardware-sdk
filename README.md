@@ -670,6 +670,15 @@ Take a screenshot and return the image in bitmap format
 | String | The path of the application to be installed |
 
 ---
+``` fun silentUninstall(packageId: String) ``` *supported by* **All**
+ 
+ Uninstall apps silently
+
+| Parameters | Description |
+|:--|:--|
+| String | The name of the application package that needs to be uninstalled |
+
+---
 
 ## Global error code
 
