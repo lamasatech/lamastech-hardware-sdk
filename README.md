@@ -685,7 +685,7 @@ Take a screenshot and return the image in bitmap format
 
 | Parameters | Description |
 |:--|:--|
-| timeout | time in ms |
+| timeout | value in milliseconds (e.g., 60000 = 1 minute) |
 | callback | result callback |
 
 ---
