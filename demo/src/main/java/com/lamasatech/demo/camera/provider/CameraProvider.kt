@@ -10,6 +10,17 @@ import android.view.SurfaceHolder
 import android.view.WindowManager
 import kotlin.math.abs
 
+/**
+ * CameraProvider wraps Android's legacy Camera1 API for handling preview
+ * and picture capture from a specified device camera (by id).
+ *
+ * Provides methods for opening cameras with either SurfaceHolder or
+ * SurfaceTexture, listening to preview frames, setting the best preview size,
+ * and correcting orientation.
+ *
+ * @property context The Android Context.
+ * @property cameraId The camera ID (0 for RGB, 1 for IR).
+ */
 @Suppress("DEPRECATION")
 class CameraProvider(
     val context: Context,
@@ -22,14 +33,21 @@ class CameraProvider(
 
     private var size: Camera.Size? = null
 
+    /**
+     * Sets the callback for frame delivery.
+     */
     override fun setListener(l: (data: ByteArray, width: Int, height: Int) -> Unit) {
         listener = l
     }
 
+    /**
+     * Returns the preview size, or null if not set.
+     */
     fun getSize(): Camera.Size? = size
 
     /**
      * Open camera with SurfaceHolder (SurfaceView).
+     * @param holder The SurfaceHolder to attach the camera preview to.
      */
     fun openWithSurfaceHolder(holder: SurfaceHolder) {
         openInternal { cam ->
@@ -39,6 +57,7 @@ class CameraProvider(
 
     /**
      * Open camera with SurfaceTexture (offscreen or TextureView).
+     * @param surfaceTexture The SurfaceTexture to attach the camera preview to.
      */
     fun openWithSurfaceTexture(surfaceTexture: SurfaceTexture) {
         openInternal { cam ->
@@ -46,6 +65,9 @@ class CameraProvider(
         }
     }
 
+    /**
+     * Internal helper to open and configure the camera, attach surface, and start preview.
+     */
     private fun openInternal(attachSurface: (Camera) -> Unit) {
         try {
             if (camera != null) stop()
@@ -77,6 +99,10 @@ class CameraProvider(
         }
     }
 
+    /**
+     * Captures a JPEG still image and passes it to the callback.
+     * @param imageData Callback invoked with JPEG data.
+     */
     fun takePicture(imageData : (ByteArray) -> Unit){
         camera?.takePicture(null,null) { data, camera ->
             imageData.invoke(data)
@@ -84,6 +110,9 @@ class CameraProvider(
         }
     }
 
+    /**
+     * Stops and releases the camera (preview and all resources).
+     */
     fun stop() {
         camera?.apply {
             runCatching { setPreviewCallbackWithBuffer(null) }.onFailure { it.printStackTrace() }
@@ -94,6 +123,9 @@ class CameraProvider(
         listener = null
     }
 
+    /**
+     * Updates camera parameters (format, size, orientation, etc.) using display info.
+     */
     private fun Camera.updateParameter() {
         val params = parameters
 
@@ -118,6 +150,9 @@ class CameraProvider(
         parameters = params
     }
 
+    /**
+     * Chooses the preview size that best matches the device screen.
+     */
     private fun getBestPreviewSize(
         sizes: List<Camera.Size>,
         targetWidth: Int,
@@ -143,6 +178,9 @@ class CameraProvider(
     }
 
 
+    /**
+     * Computes the display orientation based on device rotation and camera orientation.
+     */
     private fun calculateDisplayOrientation(): Int {
         val info = Camera.CameraInfo()
         Camera.getCameraInfo(cameraId, info)
