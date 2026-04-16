@@ -880,7 +880,7 @@ Grant accessibility permission to a service.
 
 | Model | Devices |
 |:--|:--|
-| **RK3576** | LT-ACCRK3576-poe |
+| **RK3576** | Any device model containing `RK3576` |
 | **RK3568** | Zentron_5 |
 | **S3568** | VersiV1s3568, VersiV2s3568, MuroDv1s3568, MuroDv2s3568, CanvasV2s3568 |
 | **Zentron** | rk3288, LT-Zentron8, LT-Zentron15, LD-AITemp |
