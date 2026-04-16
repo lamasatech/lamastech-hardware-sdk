@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 1. setBrightness -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. setBrightness (0-255)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <SeekBar
+            android:id="@+id/seekBrightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:min="50"
+            android:max="255"
+            android:progress="128" />
+
+        <TextView
+            android:id="@+id/tvBrightnessValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Value: 128"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnSetBrightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Brightness" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- 2. setLcdBrightness -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2. setLcdBrightness (screenId, 0-255)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etScreenId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Screen ID (0=main, 1=secondary)"
+            android:inputType="number"
+            android:text="0" />
+
+        <SeekBar
+            android:id="@+id/seekLcdBrightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:min="0"
+            android:max="255"
+            android:progress="128" />
+
+        <TextView
+            android:id="@+id/tvLcdBrightnessValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Value: 128"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnSetLcdBrightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set LCD Brightness" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- 3. setLcdBackLight -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="3. setLcdBackLight (0-255)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <SeekBar
+            android:id="@+id/seekLcdBackLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:min="0"
+            android:max="255"
+            android:progress="128" />
+
+        <TextView
+            android:id="@+id/tvLcdBackLightValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Value: 128"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnSetLcdBackLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set LCD BackLight" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- 4. setEDPBackLight -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="4. setEDPBackLight (0-255)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <SeekBar
+            android:id="@+id/seekEdpBackLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:min="0"
+            android:max="255"
+            android:progress="128" />
+
+        <TextView
+            android:id="@+id/tvEdpBackLightValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Value: 128"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnSetEdpBackLight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set EDP BackLight" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- 5. setLcdBackLightEnable -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="5. setLcdBackLightEnable (screenId)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnBacklightOn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Enable" />
+
+            <Button
+                android:id="@+id/btnBacklightOff"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Disable" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnGetBacklight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Backlight Status" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- Rotation -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rotation"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etRotation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Rotation degree (0, 90, 180, 270)"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btnSetRotation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Rotation" />
+
+        <Button
+            android:id="@+id/btnGetRotation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Display Rotation" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- Timeout -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Screen Timeout"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etTimeout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Timeout in milliseconds (e.g. 60000)"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btnSetTimeout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Screen Timeout" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCCCCC"
+            android:layout_marginVertical="12dp" />
+
+        <!-- Result -->
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="13sp"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</ScrollView>

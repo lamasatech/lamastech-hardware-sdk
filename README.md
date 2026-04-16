@@ -153,7 +153,11 @@ Set scheduled power on/off with weekly recurrence.
 ```kotlin
 fun setBrightness(context: Context, brightness: Int)
 ```
-Set screen brightness. Value range: **0 to 100**.
+Set screen brightness.
+
+| Parameter | Description |
+|:--|:--|
+| brightness | Brightness value. Range depends on device: some models accept **0-100**, others accept **0-255**. Higher value = brighter. |
 
 ---
 
@@ -165,7 +169,29 @@ Set brightness per screen (dual-screen support).
 | Parameter | Description |
 |:--|:--|
 | screenId | `0`: Main screen, `1`: Secondary screen |
-| brightness | Brightness value |
+| brightness | Brightness value (**0-255**). Higher value = brighter. |
+
+---
+
+```kotlin
+fun setLcdBackLight(brightness: Int): Int
+```
+Set primary screen backlight brightness.
+
+| Parameter | Description |
+|:--|:--|
+| brightness | Backlight brightness value (**0-255**) |
+
+---
+
+```kotlin
+fun setEDPBackLight(brightness: Int): Int
+```
+Set secondary screen (EDP) backlight brightness.
+
+| Parameter | Description |
+|:--|:--|
+| brightness | Backlight brightness value (**0-255**) |
 
 ---
 
@@ -886,6 +912,8 @@ The table below shows which functions are available on each device model. **Yes*
 | `setRotation` | Yes | Yes | Yes | Yes |
 | `setDisplayRotation` | Yes | Yes | Yes | Yes |
 | `getDisplayRotation` | - | Yes | Yes | Yes |
+| `setLcdBackLight` | Yes | - | Yes | Yes |
+| `setEDPBackLight` | Yes | - | Yes | Yes |
 | `setLcdBackLightEnable` | Yes | - | Yes | - |
 | `getLcdBackLightEnable` | Yes | - | Yes | - |
 | `setTimeOut` | Yes | Yes | Yes | Yes |

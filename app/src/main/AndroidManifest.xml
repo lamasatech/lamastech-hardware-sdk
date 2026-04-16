@@ -2,14 +2,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Samples" />
+        android:theme="@style/Theme.Samples"
+        android:requestLegacyExternalStorage="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".DeviceInfoActivity" />
+        <activity android:name=".PowerActivity" />
+        <activity android:name=".DisplayActivity" />
+        <activity android:name=".LedActivity" />
+        <activity android:name=".SystemUiActivity" />
+        <activity android:name=".GpioRelayActivity" />
+        <activity android:name=".AppManagementActivity" />
+        <activity android:name=".NetworkActivity" />
+        <activity android:name=".EthernetActivity" />
+        <activity android:name=".HardwareActivity" />
+        <activity android:name=".SystemActivity" />
+        <activity android:name=".SettingsActivity" />
+    </application>
 
 </manifest>
