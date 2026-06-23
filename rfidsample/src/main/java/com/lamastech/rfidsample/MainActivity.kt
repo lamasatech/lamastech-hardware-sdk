@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val rfidManager = RfidManager.getInstance(applicationContext)
+        val rfidManager = RfidManager.instance
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
