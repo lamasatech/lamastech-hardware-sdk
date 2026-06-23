@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">RFID Sample</string>
+    <string name="waiting">Waiting for card…</string>
+    <string name="status_active">● Active — Wiegand + Serial (/dev/ttyS1)</string>
+    <string name="status_inactive">○ Inactive</string>
+</resources>
