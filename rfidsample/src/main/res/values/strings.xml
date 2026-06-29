@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">RFID Sample</string>
-    <string name="waiting">Waiting for card…</string>
-    <string name="status_active">● Active — Wiegand + Serial (/dev/ttyS1)</string>
-    <string name="status_inactive">○ Inactive</string>
+    <string name="waiting">Waiting for scan…</string>
+    <string name="label_serial_port">Serial Port</string>
+    <string name="label_baud_rate">Baud Rate</string>
+    <string name="label_last_scan">Last Scanned Card</string>
+    <string name="btn_start">Start Reading</string>
+    <string name="btn_clear">Clear</string>
+    <string name="no_ports_found">No serial ports found</string>
 </resources>
