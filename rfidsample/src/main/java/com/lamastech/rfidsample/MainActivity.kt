@@ -1,10 +1,12 @@
 package com.lamastech.rfidsample
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,9 +19,19 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
+    private enum class ReadState { IDLE, READING, STALE }
+
     private lateinit var binding: ActivityMainBinding
     private var rfidManager: RfidManager? = null
     private var collectJob: Job? = null
+    private var readState = ReadState.IDLE
+
+    // Guard: suppress dropdown listeners during initial adapter setup
+    private var dropdownsReady = false
+
+    // Port and baud of the currently active reading session
+    private var activePort: String? = null
+    private var activeBaud: String? = null
 
     private val baudRates = listOf(
         1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
@@ -32,12 +44,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val ports = discoverSerialPorts()
+        val ports = SerialPortFinder.find()
         val recommended = RfidDefaults.detect()
 
-        setupPortSpinner(ports, recommended)
-        setupBaudSpinner(recommended)
+        setupPortDropdown(ports, recommended)
+        setupBaudDropdown(recommended)
         showHint(recommended)
+        applyReadState(ReadState.IDLE)
+
+        dropdownsReady = true
+        attachDropdownListeners()
 
         binding.btnStart.setOnClickListener { onStartClicked() }
         binding.btnClear.setOnClickListener {
@@ -45,29 +61,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupPortSpinner(ports: List<String>, recommended: RfidDefaults.PortConfig?) {
+    // region Dropdown setup
+
+    private fun setupPortDropdown(ports: List<String>, recommended: RfidDefaults.PortConfig?) {
         if (ports.isEmpty()) {
             Toast.makeText(this, getString(R.string.no_ports_found), Toast.LENGTH_SHORT).show()
         }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, ports)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerPort.adapter = adapter
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, ports)
+        binding.spinnerPort.setAdapter(adapter)
+        val initial = recommended?.path?.takeIf { it in ports } ?: ports.firstOrNull() ?: return
+        binding.spinnerPort.setText(initial, false)
+    }
 
-        if (recommended != null) {
-            val idx = ports.indexOf(recommended.path)
-            if (idx >= 0) binding.spinnerPort.setSelection(idx)
+    private fun setupBaudDropdown(recommended: RfidDefaults.PortConfig?) {
+        val labels = baudRates.map { it.toString() }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, labels)
+        binding.spinnerBaud.setAdapter(adapter)
+        val target = (recommended?.baudRate ?: 9600).toString()
+        binding.spinnerBaud.setText(target, false)
+    }
+
+    private fun attachDropdownListeners() {
+        binding.spinnerPort.setOnItemClickListener { parent, _, pos, _ ->
+            val picked = parent.getItemAtPosition(pos).toString()
+            if (dropdownsReady && readState == ReadState.READING && picked != activePort)
+                applyReadState(ReadState.STALE)
+        }
+        binding.spinnerBaud.setOnItemClickListener { parent, _, pos, _ ->
+            val picked = parent.getItemAtPosition(pos).toString()
+            if (dropdownsReady && readState == ReadState.READING && picked != activeBaud)
+                applyReadState(ReadState.STALE)
         }
     }
 
-    private fun setupBaudSpinner(recommended: RfidDefaults.PortConfig?) {
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, baudRates)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerBaud.adapter = adapter
+    // endregion
 
-        val targetBaud = recommended?.baudRate ?: 9600
-        val idx = baudRates.indexOf(targetBaud)
-        if (idx >= 0) binding.spinnerBaud.setSelection(idx)
-    }
+    // region Hint banner
 
     private fun showHint(recommended: RfidDefaults.PortConfig?) {
         if (recommended == null) {
@@ -75,27 +104,50 @@ class MainActivity : AppCompatActivity() {
             return
         }
         binding.tvPortHint.visibility = View.VISIBLE
-        binding.tvPortHint.text =
-            "Detected: ${recommended.modelLabel}\n" +
-            "Recommended → ${recommended.path}  @  ${recommended.baudRate} baud"
+        binding.tvPortHint.text = getString(
+            R.string.hint_detected,
+            recommended.modelLabel,
+            recommended.path,
+            recommended.baudRate,
+        )
     }
 
-    private fun discoverSerialPorts(): List<String> = SerialPortFinder.find()
+    // endregion
+
+    // region Start button state machine
+
+    private fun applyReadState(state: ReadState) {
+        readState = state
+        val (labelRes, colorRes) = when (state) {
+            ReadState.IDLE    -> R.string.btn_start   to R.color.btn_idle
+            ReadState.READING -> R.string.btn_reading to R.color.btn_reading
+            ReadState.STALE   -> R.string.btn_stale   to R.color.btn_stale
+        }
+        binding.btnStart.text = getString(labelRes)
+        binding.btnStart.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(this, colorRes))
+    }
+
+    // endregion
+
+    // region RFID session
 
     private fun onStartClicked() {
-        val port = binding.spinnerPort.selectedItem as? String
-        val baudRate = binding.spinnerBaud.selectedItem as? Int
+        val port = binding.spinnerPort.text.toString().ifBlank { null }
+        val baudRate = binding.spinnerBaud.text.toString().toIntOrNull()
 
         if (port == null || baudRate == null) {
             Toast.makeText(this, getString(R.string.no_ports_found), Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Stop previous session
         collectJob?.cancel()
         rfidManager?.stop()
 
+        activePort = port
+        activeBaud = baudRate.toString()
         binding.tvLastUid.text = getString(R.string.waiting)
+        applyReadState(ReadState.READING)
 
         val manager = RfidManager(port, baudRate)
         rfidManager = manager
@@ -108,6 +160,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    // endregion
 
     override fun onDestroy() {
         super.onDestroy()

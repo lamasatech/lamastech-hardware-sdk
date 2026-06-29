@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="btn_idle">#1565C0</color>
+    <color name="btn_reading">#2E7D32</color>
+    <color name="btn_stale">#E65100</color>
+    <color name="btn_idle_ripple">#1976D2</color>
+    <color name="btn_reading_ripple">#388E3C</color>
+    <color name="btn_stale_ripple">#EF6C00</color>
 </resources>

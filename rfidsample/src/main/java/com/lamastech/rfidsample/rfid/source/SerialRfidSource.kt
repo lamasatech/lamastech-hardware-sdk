@@ -1,6 +1,5 @@
 package com.lamastech.rfidsample.rfid.source
 
-import android.util.Log
 import com.lamastech.rfidsample.rfid.UidParser
 import org.winplus.serial.utils.SerialPort
 import java.io.File
@@ -19,7 +18,6 @@ class SerialRfidSource(
     private val baudRate: Int = 9600,
 ) : RfidSource {
 
-    private val tag = SerialRfidSource::class.java.simpleName
     private var serialPort: SerialPort? = null
     private var inputStream: InputStream? = null
 
@@ -28,7 +26,7 @@ class SerialRfidSource(
             serialPort = SerialPort(File(path), baudRate, 0)
             inputStream = serialPort!!.inputStream
         } catch (e: Exception) {
-            Log.e(tag, "Failed to open $path", e)
+            // Port stays null; read() will return null on every tick
         }
     }
 

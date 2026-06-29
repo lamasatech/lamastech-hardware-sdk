@@ -5,6 +5,9 @@
     <string name="label_baud_rate">Baud Rate</string>
     <string name="label_last_scan">Last Scanned Card</string>
     <string name="btn_start">Start Reading</string>
+    <string name="btn_reading">● Reading</string>
+    <string name="btn_stale">Settings changed — tap to reapply</string>
     <string name="btn_clear">Clear</string>
     <string name="no_ports_found">No serial ports found</string>
+    <string name="hint_detected">Detected: %1$s\nRecommended → %2$s  @  %3$d baud</string>
 </resources>
