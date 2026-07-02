@@ -59,7 +59,29 @@ public class SerialPort {
     }
 
     private native static FileDescriptor open(String path, int baudrate, int flags);
-    public native void close();
+
+    /*
+     * The vendor native close() reads a FileDescriptor's "descriptor" field
+     * directly off `thiz`, but `thiz` here is a SerialPort, not a
+     * FileDescriptor. Under CheckJNI (debuggable builds) that type mismatch
+     * aborts the process. Close via the streams instead, which safely closes
+     * the shared mFd through the platform's own FileDescriptor ref-counting.
+     */
+    public void close() {
+        try {
+            if (mFileInputStream != null) mFileInputStream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "failed to close input stream", e);
+        }
+        try {
+            if (mFileOutputStream != null) mFileOutputStream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "failed to close output stream", e);
+        }
+        mFd = null;
+        mFileInputStream = null;
+        mFileOutputStream = null;
+    }
 
     static {
         System.loadLibrary("winplusserial_port");
