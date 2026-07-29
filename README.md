@@ -20,6 +20,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
   - [Screenshot](#screenshot)
   - [Firmware & System](#firmware--system)
   - [System Settings](#system-settings)
+- [Serial (RFID & QR)](#serial-rfid--qr)
 - [Supported Devices](#supported-devices)
 - [Support Matrix](#support-matrix)
 - [Error Handling](#error-handling)
@@ -876,6 +877,97 @@ Grant accessibility permission to a service.
 
 ---
 
+## Serial (RFID & QR)
+
+`SerialManager` reads RFID cards and QR/barcode payloads over the device's serial ports. It exposes three independent access patterns — a one-shot suspend read, a continuous `Flow`, and a settable callback — for RFID and QR separately, so you can pick whichever fits a given screen.
+
+---
+
+```kotlin
+class SerialManager(
+    device: IDevice?,
+    callerScope: CoroutineScope? = null,
+    rfidPortOverride: SerialPortConfig? = null,
+    qrPortOverride: SerialPortConfig? = null,
+)
+```
+Create one `SerialManager` per screen/session that needs scanning.
+
+| Parameter | Description |
+|:--|:--|
+| device | Pass `DeviceManager.instance?.device` |
+| callerScope | Your own `CoroutineScope` (e.g. `lifecycleScope`, `viewModelScope`). Reads/flows/callbacks then follow that scope's lifecycle, and `stop()` won't cancel a scope it doesn't own. Omit it and `SerialManager` creates and owns a fallback scope instead, which `stop()` will cancel. |
+| rfidPortOverride | Force a specific RFID port/baud instead of auto-detecting it from the device model |
+| qrPortOverride | Force a specific QR port/baud instead of auto-detecting it from the device model |
+
+Port and baud rate are auto-detected from the port the running device model declares (see the [Support Matrix](#serial-rfid--qr) below for which models declare which). If a model doesn't declare that capability and no override was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
+
+---
+
+```kotlin
+data class SerialPortConfig(val path: String, val baudRate: Int)
+```
+Pass to `rfidPortOverride`/`qrPortOverride` to force a specific port, e.g. `SerialPortConfig("/dev/ttyS3", 115200)`.
+
+---
+
+```kotlin
+suspend fun readRfid(timeoutMs: Long = 10_000): String?
+suspend fun readQr(timeoutMs: Long = 10_000): String?
+```
+Suspends for a single scan. Returns `null` if nothing arrives within `timeoutMs`.
+
+```kotlin
+lifecycleScope.launch {
+    val uid = serialManager.readRfid()
+    if (uid != null) {
+        // card scanned
+    }
+}
+```
+
+---
+
+```kotlin
+fun rfidFlow(): SharedFlow<String>
+fun qrFlow(): SharedFlow<String>
+```
+Continuous stream of scans for as long as it's collected. `rfidFlow()` merges the serial UART reader and the Wiegand door-access reader into a single stream — whichever transport reports a card first on a given poll is what gets emitted, so a single physical scan never produces two emissions.
+
+```kotlin
+lifecycleScope.launch {
+    serialManager.rfidFlow().collect { uid ->
+        // new card scanned
+    }
+}
+```
+
+---
+
+```kotlin
+var rfidCallback: ScanCallback?
+var qrCallback: ScanCallback?
+```
+Old-school listener: assign it to start observing, assign `null` to stop and drop the reference in the same step — same as `setOnClickListener(null)`.
+
+```kotlin
+serialManager.rfidCallback = ScanCallback { uid ->
+    // new card scanned
+}
+
+// later, to stop observing:
+serialManager.rfidCallback = null
+```
+
+---
+
+```kotlin
+fun stop()
+```
+Clears `rfidCallback` and `qrCallback`. Cancels the internal scope only if `SerialManager` created it itself (i.e. no `callerScope` was passed in) — otherwise your own scope is left untouched, since you own its lifecycle.
+
+---
+
 ## Supported Devices
 
 | Model | Devices |
@@ -1043,6 +1135,15 @@ The table below shows which functions are available on each device model. **Yes*
 | `secureSettingPut/Get` | Yes | Yes | Yes | Yes |
 | `globalSettingPut/Get` | Yes | Yes | Yes | Yes |
 | `grantAccessibilityPermission` | Yes | Yes | Yes | Yes |
+
+### Serial (RFID & QR)
+
+`-` means the model doesn't declare that serial port — the corresponding read/flow/callback never produces a value; it does **not** throw `NotSupportedMethodException` like the tables above.
+
+| Method | RK3576 | RK3568 | S3568 | Zentron |
+|:--|:--:|:--:|:--:|:--:|
+| `readRfid` / `rfidFlow` / `rfidCallback` | Yes | Yes | - | Yes |
+| `readQr` / `qrFlow` / `qrCallback` | Yes | Yes | - | Yes |
 
 ---
 
