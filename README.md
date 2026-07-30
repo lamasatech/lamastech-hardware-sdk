@@ -894,8 +894,6 @@ Grant accessibility permission to a service.
 
 `SerialManager` reads RFID cards and QR/barcode payloads over the device's serial ports. It exposes three independent access patterns — a one-shot suspend read, a continuous `Flow`, and a settable callback — for RFID and QR separately, so you can pick whichever fits a given screen.
 
-> RFID reading is serial-UART only. An earlier version also merged in a Wiegand transport, but the vendor Wiegand call can block indefinitely with no timeout waiting for hardware data — sharing it with the UART poll loop could freeze RFID reading entirely. It was removed rather than reworked onto a dedicated thread: one reliable transport beats two, one of which can hang the other.
-
 ---
 
 ```kotlin
