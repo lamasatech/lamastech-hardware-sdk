@@ -96,7 +96,7 @@ class AppModule {
 ```kotlin
 fun getSerialNumber(): String
 ```
-Device serial number. Tries the OS-reported serial first (`Build.getSerial()` on API 26+, `Build.SERIAL` below that); if that's unavailable or a placeholder, falls back to a device-specific value.
+Device serial number
 
 ---
 
