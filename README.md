@@ -7,6 +7,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
 - [How to Add Lib to Your Project](#how-to-add-lib-to-your-project)
 - [How to Use](#how-to-use)
 - [API Reference](#api-reference)
+  - [Device Info](#device-info)
   - [Power Management](#power-management)
   - [Display & Brightness](#display--brightness)
   - [LED Indicators](#led-indicators)
@@ -87,6 +88,17 @@ class AppModule {
 ---
 
 ## API Reference
+
+### Device Info
+
+---
+
+```kotlin
+fun getSerialNumber(): String
+```
+Device serial number. Reads it from the model's vendor SDK (`smdt`/`ysapi`/`YNHAPI`). If the vendor SDK returns a blank value — or on models with no vendor-specific implementation — falls back to the OS-reported serial (`Build.getSerial()` on API 26+, `Build.SERIAL` below that).
+
+---
 
 ### Power Management
 
@@ -903,6 +915,8 @@ Create one `SerialManager` per screen/session that needs scanning.
 
 Port and baud rate are auto-detected from the port the running device model declares (see [Supported Devices](#supported-devices-1) below for which models declare which). If a model doesn't declare that capability and no override was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
 
+For QR, the declared port isn't trusted blindly: the same physical scanner can enumerate as either `ttyUSB*` or `ttyACM*` depending on which USB personality it boots into, and the two are mutually exclusive on a given unit. If the declared port isn't actually present on the device, the SDK falls back to whichever kind (`ttyUSB*`/`ttyACM*`) really is there.
+
 ---
 
 ```kotlin
@@ -1028,6 +1042,7 @@ A complete working example is also in the demo app's `ScannerSampleActivity` (ki
 | **RK3568** | Zentron_5 |
 | **S3568** | VersiV1s3568, VersiV2s3568, MuroDv1s3568, MuroDv2s3568, CanvasV2s3568 |
 | **Zentron** | rk3288, LT-Zentron8, LT-Zentron15, LD-AITemp |
+| **Zentron21** | Zentron_21 |
 
 The SDK auto-detects the device model at runtime. You do not need to specify the model manually.
 
@@ -1197,7 +1212,8 @@ Straight from `ModelType`: every declared model and the RFID/QR serial port `Ser
 | Old3280 | `3280` | - | - |
 | Old3288 | `3288` | - | - |
 | OctopusA83 | `Octopus A83 F1` | `/dev/ttyS3` @ 9600 | - |
-| Zentron | `rk3288`, `LT-Zentron8`, `LT-Zentron15`, `LD-AITemp`, `rk3288_tdx`, `Zentron_21` | `/dev/ttyS1` @ 9600 | `/dev/ttyUSB0` @ 115200 |
+| Zentron | `rk3288`, `LT-Zentron8`, `LT-Zentron15`, `LD-AITemp`, `rk3288_tdx` | `/dev/ttyS1` @ 9600 | `/dev/ttyACM0` @ 9600 |
+| Zentron21 | `Zentron_21` | `/dev/ttyS3` @ 9600 | `/dev/ttyACM0` @ 9600 |
 | Visipoint15 | `Visipoint 15` | `/dev/ttyS4` @ 115200 | - |
 | DefaultSMDT | `SMDT` (fallback for unrecognized SMDT devices) | `/dev/ttyS3` @ 9600 | - |
 | S3568 | `VersiV1s3568`, `VersiV2s3568`, `MuroDv1s3568`, `MuroDv2s3568`, `CanvasV2s3568`, `MuroM2-43-V3s3568` | - | - |
