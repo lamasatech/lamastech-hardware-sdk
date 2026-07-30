@@ -96,7 +96,7 @@ class AppModule {
 ```kotlin
 fun getSerialNumber(): String
 ```
-Device serial number. Reads it from the model's vendor SDK (`smdt`/`ysapi`/`YNHAPI`). If the vendor SDK returns a blank value — or on models with no vendor-specific implementation — falls back to the OS-reported serial (`Build.getSerial()` on API 26+, `Build.SERIAL` below that).
+Device serial number. Tries the OS-reported serial first (`Build.getSerial()` on API 26+, `Build.SERIAL` below that); if that's unavailable or a placeholder, falls back to a device-specific value.
 
 ---
 
