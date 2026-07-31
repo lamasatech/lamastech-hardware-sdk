@@ -34,7 +34,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
 
 ## How to Add Lib to Your Project
 
-1. Add the AAR file to your app's `libs/` directory
+1. Download the latest AAR from the [Releases page](https://github.com/lamasatech/lamastech-hardware-sdk/releases/latest) — each release attaches `kiosk-hardware-lib-<version>.aar` as a downloadable asset. Place it in your app's `libs/` directory, renamed to `kioskhardware-release.aar` (or update the path below to match the downloaded filename).
 2. Inside `build.gradle` add:
 
 ```kotlin
@@ -1028,7 +1028,7 @@ class ScannerExampleActivity : AppCompatActivity() {
 }
 ```
 
-A complete working example is also in the demo app's `ScannerSampleActivity` (kiosk-hardware-lib repo, `:app` module).
+A complete working example is also in this repo's demo app: `ScannerActivity` (`:app` module, `com.lamasatech.samples` package), reachable from the "RFID / QR Sample" tile on the app's home screen. It exercises all three read patterns (one-shot, `Flow`, callback) for both RFID and QR, plus manual port/baud override.
 
 ---
 
