@@ -37,6 +37,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    applicationVariants.all {
+        outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output.outputFileName = "sdk-demo-${versionName}.apk"
+        }
+    }
 }
 
 dependencies {
@@ -52,4 +58,6 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+
+    testImplementation("junit:junit:4.13.2")
 }
