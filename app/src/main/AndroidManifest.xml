@@ -39,6 +39,7 @@
         <activity android:name=".NetworkActivity" />
         <activity android:name=".EthernetActivity" />
         <activity android:name=".HardwareActivity" />
+        <activity android:name=".ScannerActivity" />
         <activity android:name=".SystemActivity" />
         <activity android:name=".SettingsActivity" />
     </application>

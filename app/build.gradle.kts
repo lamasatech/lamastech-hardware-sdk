@@ -51,4 +51,5 @@ dependencies {
     implementation("com.github.topjohnwu.libsu:service:5.2.2")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("com.google.code.gson:gson:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 }
