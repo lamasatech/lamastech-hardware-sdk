@@ -7,6 +7,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
 - [How to Add Lib to Your Project](#how-to-add-lib-to-your-project)
 - [How to Use](#how-to-use)
 - [API Reference](#api-reference)
+  - [Device Info](#device-info)
   - [Power Management](#power-management)
   - [Display & Brightness](#display--brightness)
   - [LED Indicators](#led-indicators)
@@ -20,6 +21,8 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
   - [Screenshot](#screenshot)
   - [Firmware & System](#firmware--system)
   - [System Settings](#system-settings)
+- [Serial (RFID & QR)](#serial-rfid--qr)
+  - [Quick Example](#quick-example)
 - [Supported Devices](#supported-devices)
 - [Support Matrix](#support-matrix)
 - [Error Handling](#error-handling)
@@ -85,6 +88,17 @@ class AppModule {
 ---
 
 ## API Reference
+
+### Device Info
+
+---
+
+```kotlin
+fun getSerialNumber(): String
+```
+Device serial number
+
+---
 
 ### Power Management
 
@@ -876,6 +890,148 @@ Grant accessibility permission to a service.
 
 ---
 
+## Serial (RFID & QR)
+
+`SerialManager` reads RFID cards and QR/barcode payloads over the device's serial ports. It exposes three independent access patterns — a one-shot suspend read, a continuous `Flow`, and a settable callback — for RFID and QR separately, so you can pick whichever fits a given screen.
+
+---
+
+```kotlin
+class SerialManager(
+    callerScope: CoroutineScope? = null,
+    rfidPortOverride: SerialPortConfig? = null,
+    qrPortOverride: SerialPortConfig? = null,
+)
+```
+Create one `SerialManager` per screen/session that needs scanning.
+
+| Parameter | Description |
+|:--|:--|
+| callerScope | Your own `CoroutineScope` (e.g. `lifecycleScope`, `viewModelScope`). Reads/flows/callbacks then follow that scope's lifecycle, and `stop()` won't cancel a scope it doesn't own. Omit it and `SerialManager` creates and owns a fallback scope instead, which `stop()` will cancel. |
+| rfidPortOverride | Force a specific RFID port/baud instead of auto-detecting it from the device model |
+| qrPortOverride | Force a specific QR port/baud instead of auto-detecting it from the device model |
+
+Port and baud rate are auto-detected from the port the running device model declares (see [Supported Devices](#supported-devices-1) below for which models declare which). If a model doesn't declare that capability and no override was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
+
+For QR, the declared port isn't trusted blindly: the same physical scanner can enumerate as either `ttyUSB*` or `ttyACM*` depending on which USB personality it boots into, and the two are mutually exclusive on a given unit. If the declared port isn't actually present on the device, the SDK falls back to whichever kind (`ttyUSB*`/`ttyACM*`) really is there.
+
+---
+
+```kotlin
+data class SerialPortConfig(val path: String, val baudRate: Int)
+```
+Pass to `rfidPortOverride`/`qrPortOverride` to force a specific port, e.g. `SerialPortConfig("/dev/ttyS3", 115200)`.
+
+---
+
+```kotlin
+suspend fun readRfid(timeoutMs: Long = 10_000): String?
+suspend fun readQr(timeoutMs: Long = 10_000): String?
+```
+Suspends for a single scan. Returns `null` if nothing arrives within `timeoutMs`.
+
+```kotlin
+lifecycleScope.launch {
+    val uid = serialManager.readRfid()
+    if (uid != null) {
+        // card scanned
+    }
+}
+```
+
+---
+
+```kotlin
+fun rfidFlow(): SharedFlow<String>
+fun qrFlow(): SharedFlow<String>
+```
+Continuous stream of scans for as long as it's collected.
+
+```kotlin
+lifecycleScope.launch {
+    serialManager.rfidFlow().collect { uid ->
+        // new card scanned
+    }
+}
+```
+
+---
+
+```kotlin
+var rfidCallback: ScanCallback?
+var qrCallback: ScanCallback?
+```
+Old-school listener: assign it to start observing, assign `null` to stop and drop the reference in the same step — same as `setOnClickListener(null)`.
+
+```kotlin
+serialManager.rfidCallback = ScanCallback { uid ->
+    // new card scanned
+}
+
+// later, to stop observing:
+serialManager.rfidCallback = null
+```
+
+---
+
+```kotlin
+fun stop()
+```
+Clears `rfidCallback` and `qrCallback`. Cancels the internal scope only if `SerialManager` created it itself (i.e. no `callerScope` was passed in) — otherwise your own scope is left untouched, since you own its lifecycle.
+
+---
+
+### Quick Example
+
+All three access patterns, side by side:
+
+```kotlin
+import com.lamasatech.kioskhardware.scanner.ScanCallback
+import com.lamasatech.kioskhardware.scanner.SerialManager
+import kotlinx.coroutines.launch
+
+class ScannerExampleActivity : AppCompatActivity() {
+
+    // Pass your own scope (lifecycleScope/viewModelScope) so scanning
+    // follows this screen's lifecycle.
+    private val serialManager = SerialManager(callerScope = lifecycleScope)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 1) Direct read — suspends until one scan arrives (or times out)
+        lifecycleScope.launch {
+            val uid = serialManager.readRfid()
+            println("RFID once: $uid")
+        }
+
+        // 2) Continuous flow — keeps emitting every scan while collected
+        lifecycleScope.launch {
+            serialManager.rfidFlow().collect { uid ->
+                println("RFID flow: $uid")
+            }
+        }
+
+        // 3) Callback — old-school style, assign null to stop and release it
+        serialManager.rfidCallback = ScanCallback { uid ->
+            println("RFID callback: $uid")
+        }
+
+        // QR/barcode works exactly the same way:
+        // serialManager.readQr(), serialManager.qrFlow(), serialManager.qrCallback
+    }
+
+    override fun onDestroy() {
+        serialManager.stop() // clears callbacks; only cancels its own scope if it owns one
+        super.onDestroy()
+    }
+}
+```
+
+A complete working example is also in the demo app's `ScannerSampleActivity` (kiosk-hardware-lib repo, `:app` module).
+
+---
+
 ## Supported Devices
 
 | Model | Devices |
@@ -884,6 +1040,7 @@ Grant accessibility permission to a service.
 | **RK3568** | Zentron_5 |
 | **S3568** | VersiV1s3568, VersiV2s3568, MuroDv1s3568, MuroDv2s3568, CanvasV2s3568 |
 | **Zentron** | rk3288, LT-Zentron8, LT-Zentron15, LD-AITemp |
+| **Zentron21** | Zentron_21 |
 
 The SDK auto-detects the device model at runtime. You do not need to specify the model manually.
 
@@ -1043,6 +1200,23 @@ The table below shows which functions are available on each device model. **Yes*
 | `secureSettingPut/Get` | Yes | Yes | Yes | Yes |
 | `globalSettingPut/Get` | Yes | Yes | Yes | Yes |
 | `grantAccessibilityPermission` | Yes | Yes | Yes | Yes |
+
+### Supported Devices
+
+Straight from `ModelType`: every declared model and the RFID/QR serial port `SerialManager` auto-detects for it. `-` means that model declares no such port — the corresponding read/flow/callback never produces a value; it does **not** throw `NotSupportedMethodException` like the tables above. Any of these can still be forced manually via `rfidPortOverride`/`qrPortOverride`.
+
+| Model | Device names (`Build.MODEL`) | RFID (`readRfid`/`rfidFlow`/`rfidCallback`) | QR (`readQr`/`qrFlow`/`qrCallback`) |
+|:--|:--|:--|:--|
+| Old3280 | `3280` | - | - |
+| Old3288 | `3288` | - | - |
+| OctopusA83 | `Octopus A83 F1` | `/dev/ttyS3` @ 9600 | - |
+| Zentron | `rk3288`, `LT-Zentron8`, `LT-Zentron15`, `LD-AITemp`, `rk3288_tdx` | `/dev/ttyS1` @ 9600 | `/dev/ttyACM0` @ 9600 |
+| Zentron21 | `Zentron_21` | `/dev/ttyS3` @ 9600 | `/dev/ttyACM0` @ 9600 |
+| Visipoint15 | `Visipoint 15` | `/dev/ttyS4` @ 115200 | - |
+| DefaultSMDT | `SMDT` (fallback for unrecognized SMDT devices) | `/dev/ttyS3` @ 9600 | - |
+| S3568 | `VersiV1s3568`, `VersiV2s3568`, `MuroDv1s3568`, `MuroDv2s3568`, `CanvasV2s3568`, `MuroM2-43-V3s3568` | - | - |
+| RK3568 | `Zentron_5` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
+| RK3576 | Any model containing `RK3576`, or `LT-ACCRK3576-poe` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
 
 ---
 

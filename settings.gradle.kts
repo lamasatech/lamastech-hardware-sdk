@@ -16,4 +16,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "lamastech-hardware-sdk"
 include(":app")
-include(":rfidsample")
