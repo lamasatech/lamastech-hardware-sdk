@@ -10,6 +10,3 @@
 local.properties
 app/build
 app/libs
-
-# Built release artifacts - attach to GitHub Releases instead of committing
-sample-apk/*.apk
