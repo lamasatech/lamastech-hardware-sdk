@@ -35,7 +35,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
 
 ## Repository Structure
 
-- [`app/`](app/) — the SDK sample app: device management, display, LEDs, GPIO, network, package/launcher management, and RFID/QR (`ScannerActivity`).
+- [`app/`](app/) — the SDK sample app: device management, display, LEDs, GPIO, network, package/launcher management, and RFID/QR.
 - [`camera-sample/`](camera-sample/) — a separate sample for camera preview, face detection, mic input, and media playback.
 - [`sample-apk/`](sample-apk/) — latest built APKs for both samples above (`hardware-sample-<version>.apk`, `camera-sample-<version>.apk`).
 - For the SDK library itself (`kioskhardware-release.aar`), check the [latest Release](https://github.com/lamasatech/lamastech-hardware-sdk/releases/latest).
