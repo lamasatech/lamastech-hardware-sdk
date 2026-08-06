@@ -23,6 +23,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
   - [Firmware & System](#firmware--system)
   - [System Settings](#system-settings)
 - [Serial (RFID & QR)](#serial-rfid--qr)
+  - [Recovery & health (advanced)]
   - [Quick Example](#quick-example)
 - [Supported Devices](#supported-devices)
 - [Support Matrix](#support-matrix)
@@ -902,24 +903,14 @@ Grant accessibility permission to a service.
 
 ## Serial (RFID & QR)
 
-`SerialManager` reads RFID cards and QR/barcode payloads over the device's serial ports. It exposes three independent access patterns — a one-shot suspend read, a continuous `Flow`, and a settable callback — for RFID and QR separately, so you can pick whichever fits a given screen.
+`SerialManager` reads RFID cards and QR/barcode payloads over the device's serial ports. It exposes three independent access patterns — a one-shot suspend read, a continuous `Flow`, and a callback — for RFID and QR separately, so you can pick whichever fits a given screen.
 
 ---
 
 ```kotlin
-class SerialManager(
-    callerScope: CoroutineScope? = null,
-    rfidPortOverride: SerialPortConfig? = null,
-    qrPortOverride: SerialPortConfig? = null,
-)
+class SerialManager(context: Context? = null)
 ```
-Create one `SerialManager` per screen/session that needs scanning.
-
-| Parameter | Description |
-|:--|:--|
-| callerScope | Your own `CoroutineScope` (e.g. `lifecycleScope`, `viewModelScope`). Reads/flows/callbacks then follow that scope's lifecycle, and `stop()` won't cancel a scope it doesn't own. Omit it and `SerialManager` creates and owns a fallback scope instead, which `stop()` will cancel. |
-| rfidPortOverride | Force a specific RFID port/baud instead of auto-detecting it from the device model |
-| qrPortOverride | Force a specific QR port/baud instead of auto-detecting it from the device model |
+Create one `SerialManager` per screen/session that needs scanning. Passing `context` (typically the ApplicationContext).
 
 Port and baud rate are auto-detected from the port the running device model declares (see [Supported Devices](#supported-devices-1) below for which models declare which). If a model doesn't declare that capability and no override was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
 
@@ -930,13 +921,13 @@ For QR, the declared port isn't trusted blindly: the same physical scanner can e
 ```kotlin
 data class SerialPortConfig(val path: String, val baudRate: Int)
 ```
-Pass to `rfidPortOverride`/`qrPortOverride` to force a specific port, e.g. `SerialPortConfig("/dev/ttyS3", 115200)`.
+Pass as the `config` parameter on any of the methods below to force a specific port/baud instead of auto-detecting it, e.g. `SerialPortConfig("/dev/ttyS3", 115200)`. Port selection is a per-call parameter, not something fixed once at construction — passing a different `config` to the next call is all that's needed to switch ports; there's no need to recreate `SerialManager` for that.
 
 ---
 
 ```kotlin
-suspend fun readRfid(timeoutMs: Long = 10_000): String?
-suspend fun readQr(timeoutMs: Long = 10_000): String?
+suspend fun readRfid(config: SerialPortConfig? = null, timeoutMs: Long = 10_000): String?
+suspend fun readQr(config: SerialPortConfig? = null, timeoutMs: Long = 10_000): String?
 ```
 Suspends for a single scan. Returns `null` if nothing arrives within `timeoutMs`.
 
@@ -952,8 +943,8 @@ lifecycleScope.launch {
 ---
 
 ```kotlin
-fun rfidFlow(): SharedFlow<String>
-fun qrFlow(): SharedFlow<String>
+fun rfidFlow(config: SerialPortConfig? = null): SharedFlow<String>
+fun qrFlow(config: SerialPortConfig? = null): SharedFlow<String>
 ```
 Continuous stream of scans for as long as it's collected.
 
@@ -968,26 +959,72 @@ lifecycleScope.launch {
 ---
 
 ```kotlin
-var rfidCallback: ScanCallback?
-var qrCallback: ScanCallback?
+val rfidCallback: ScanCallback? // read-only; set via setRfidCallback
+val qrCallback: ScanCallback?   // read-only; set via setQrCallback
+
+fun setRfidCallback(config: SerialPortConfig? = null, watchScope: CoroutineScope? = null, callback: ScanCallback?)
+fun setQrCallback(config: SerialPortConfig? = null, watchScope: CoroutineScope? = null, callback: ScanCallback?)
 ```
-Old-school listener: assign it to start observing, assign `null` to stop and drop the reference in the same step — same as `setOnClickListener(null)`.
+Old-school listener: call `setRfidCallback`/`setQrCallback` to start observing, pass `callback = null` to stop and release it — same one-step shape `setOnClickListener(null)` has. Pass `watchScope` (e.g. `lifecycleScope`) to have the callback clear itself automatically once that scope completes, instead of having to clear it yourself.
 
 ```kotlin
-serialManager.rfidCallback = ScanCallback { uid ->
+serialManager.setRfidCallback(watchScope = lifecycleScope) { uid ->
     // new card scanned
 }
 
-// later, to stop observing:
-serialManager.rfidCallback = null
+// later, to stop observing manually (not needed if watchScope was passed):
+serialManager.setRfidCallback(callback = null)
 ```
+
+---
+
+```kotlin
+fun serialFlow(path: String, baudRate: Int): SharedFlow<String>
+```
+The generic counterpart to `rfidFlow`/`qrFlow` for an arbitrary serial device that isn't this model's declared RFID/QR port — e.g. a third peripheral, or a port found via `getPorts()` below.
+
+```kotlin
+suspend fun getPorts(rfidOverride: SerialPortConfig? = null, qrOverride: SerialPortConfig? = null): List<SerialPortConfig>
+```
+Every serial port path currently present on the device, each paired with a baud rate — the RFID/QR ports get their resolved baud, everything else falls back to a default guess. Useful for building a manual port-picker UI (see the demo app's `ScannerActivity`).
+
+```kotlin
+fun SerialManager.Companion.recommendedRfidPort(): SerialPortConfig?
+suspend fun SerialManager.Companion.recommendedQrPort(): SerialPortConfig?
+```
+The RFID/QR port this device model declares, without needing an instance — the same default `config = null` resolves to. Handy for pre-filling a settings screen. `recommendedQrPort` is `suspend` because its last-resort fallback can require real hardware probing.
+
+---
+
+### Recovery & health (advanced)
+
+For building your own diagnostics screen or isolating a specific failure mode.
+
+```kotlin
+suspend fun serialRecovery(config: String): Boolean
+suspend fun qrRecovery(config: SerialPortConfig? = null): Boolean
+suspend fun rfidRecovery(config: SerialPortConfig? = null): Boolean
+
+suspend fun checkPortHealth(path: String): Boolean
+suspend fun checkQrHealth(config: SerialPortConfig? = null): Boolean
+suspend fun checkRfidHealth(config: SerialPortConfig? = null): Boolean
+```
+`serialRecovery`/`qrRecovery`/`rfidRecovery` escalate through the SDK's recovery ladder (evicting whatever else is holding the port, then progressively resetting the USB topology if the port itself has gone dark) until the port comes back healthy or every tier has been tried. `checkPortHealth`/`checkQrHealth`/`checkRfidHealth` report whether a port is healthy right now, without attempting any recovery. Both need `context` to have been supplied at construction; they return `false` without it.
+
+A handful of individual recovery tiers (`fastRecovery`, `slowRecovery`, `busyBoxRecovery`, `driverRebindRecovery`, `usbAuthorizeRecovery`, `parentHubRebindRecovery`, `usbHostRebindRecovery`) are also available for isolating exactly one tier at a time — mainly useful when validating recovery behavior against real hardware rather than in everyday app code.
+
+```kotlin
+val lastQrError: ReaderError?
+val qrReaderLatencies: Map<String, Long>
+```
+`lastQrError` surfaces *why* QR reading isn't currently working (permission/busy/gone/unsupported/timeout), aggregated across whichever transports are active — diagnostic only, it doesn't change what `readQr`/`qrFlow`/the QR callback deliver. `qrReaderLatencies` reports scan-to-decode latency per active QR transport, for comparing transports/models during testing.
 
 ---
 
 ```kotlin
 fun stop()
 ```
-Clears `rfidCallback` and `qrCallback`. Cancels the internal scope only if `SerialManager` created it itself (i.e. no `callerScope` was passed in) — otherwise your own scope is left untouched, since you own its lifecycle.
+Clears both callbacks, closes every reader that's been opened so far, and cancels this instance's internal scope — the only way this instance's work stops. Also available as `close()`, so `SerialManager(...).use { ... }` works.
 
 ---
 
@@ -996,15 +1033,9 @@ Clears `rfidCallback` and `qrCallback`. Cancels the internal scope only if `Seri
 All three access patterns, side by side:
 
 ```kotlin
-import com.lamasatech.kioskhardware.scanner.ScanCallback
-import com.lamasatech.kioskhardware.scanner.SerialManager
-import kotlinx.coroutines.launch
-
 class ScannerExampleActivity : AppCompatActivity() {
 
-    // Pass your own scope (lifecycleScope/viewModelScope) so scanning
-    // follows this screen's lifecycle.
-    private val serialManager = SerialManager(callerScope = lifecycleScope)
+    private val serialManager = SerialManager(context = this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -1022,17 +1053,17 @@ class ScannerExampleActivity : AppCompatActivity() {
             }
         }
 
-        // 3) Callback — old-school style, assign null to stop and release it
-        serialManager.rfidCallback = ScanCallback { uid ->
+        // 3) Callback — clears itself once lifecycleScope completes
+        serialManager.setRfidCallback(watchScope = lifecycleScope) { uid ->
             println("RFID callback: $uid")
         }
 
         // QR/barcode works exactly the same way:
-        // serialManager.readQr(), serialManager.qrFlow(), serialManager.qrCallback
+        // serialManager.readQr(), serialManager.qrFlow(), serialManager.setQrCallback(...)
     }
 
     override fun onDestroy() {
-        serialManager.stop() // clears callbacks; only cancels its own scope if it owns one
+        serialManager.stop() // clears callbacks and closes every open reader
         super.onDestroy()
     }
 }
