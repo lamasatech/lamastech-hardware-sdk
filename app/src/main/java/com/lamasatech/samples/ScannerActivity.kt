@@ -50,6 +50,10 @@ class ScannerActivity : BaseActivity() {
     private var rfidFlowJob: Job? = null
     private var qrFlowJob: Job? = null
 
+    /** Tracked locally — [SerialManager] doesn't expose which callback (if any) is currently registered. */
+    private var rfidCallbackActive = false
+    private var qrCallbackActive = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityScannerBinding.inflate(layoutInflater)
@@ -67,11 +71,25 @@ class ScannerActivity : BaseActivity() {
         binding.btnToggleQrCallback.setOnClickListener { toggleQrCallback() }
         binding.btnApplyRfidPort.setOnClickListener { applyNewPortSelection() }
         binding.btnApplyQrPort.setOnClickListener { applyNewPortSelection() }
+        binding.btnRfidRecovery.setOnClickListener { runRfidRecovery() }
+        binding.btnRfidHealth.setOnClickListener { checkRfidHealth() }
+        binding.btnQrRecovery.setOnClickListener { runQrRecovery() }
+        binding.btnQrHealth.setOnClickListener { checkQrHealth() }
+        binding.btnQrPing.setOnClickListener { pingQr() }
     }
 
     // region Port/baud dropdowns
 
-    /** Populates both port/baud dropdown pairs and pre-fills them with this model's recommended port. */
+    /**
+     * Populates both port/baud dropdown pairs, defaulting each to the first
+     * port [SerialPortFinder.find] turns up. [SerialManager] no longer
+     * exposes which port it would auto-resolve to on its own (that's an
+     * internal implementation detail, not part of its public API), so this
+     * can't pre-fill a "recommended" pick the way it used to — leaving a
+     * dropdown at its default still means `override = null` on every call
+     * below, which is [SerialManager]'s own "auto-resolve" behavior either
+     * way.
+     */
     private fun setupPortDropdowns() {
         val ports = SerialPortFinder.find()
         if (ports.isEmpty()) {
@@ -85,23 +103,13 @@ class ScannerActivity : BaseActivity() {
         binding.spinnerQrPort.setAdapter(portAdapter)
         binding.spinnerQrBaud.setAdapter(baudAdapter)
 
-        val recommendedRfid = SerialManager.recommendedRfidPort()
-        binding.spinnerRfidPort.setText(recommendedRfid?.path?.takeIf { it in ports } ?: ports.firstOrNull().orEmpty(), false)
-        binding.spinnerRfidBaud.setText((recommendedRfid?.baudRate ?: 9600).toString(), false)
-        binding.tvRfidPortHint.text = recommendedRfid
-            ?.let { "Recommended for this model: ${it.path} @ ${it.baudRate} baud" }
-            ?: "This model declares no RFID serial port — pick one manually"
+        binding.spinnerRfidPort.setText(ports.firstOrNull().orEmpty(), false)
+        binding.spinnerRfidBaud.setText("9600", false)
+        binding.tvRfidPortHint.text = "Pick a port manually, or leave as-is to let SerialManager auto-detect its own default"
 
-        // recommendedQrPort() is suspend — its last-resort tier can probe real
-        // hardware — so the QR dropdown is pre-filled asynchronously.
-        activityScope.launch {
-            val recommendedQr = SerialManager.recommendedQrPort()
-            binding.spinnerQrPort.setText(recommendedQr?.path?.takeIf { it in ports } ?: ports.firstOrNull().orEmpty(), false)
-            binding.spinnerQrBaud.setText((recommendedQr?.baudRate ?: 9600).toString(), false)
-            binding.tvQrPortHint.text = recommendedQr
-                ?.let { "Recommended for this model: ${it.path} @ ${it.baudRate} baud" }
-                ?: "This model declares no QR serial port — pick one manually"
-        }
+        binding.spinnerQrPort.setText(ports.firstOrNull().orEmpty(), false)
+        binding.spinnerQrBaud.setText("9600", false)
+        binding.tvQrPortHint.text = "Pick a port manually, or leave as-is to let SerialManager auto-detect its own default"
     }
 
     private fun selectedRfidPort(): SerialPortConfig? {
@@ -134,6 +142,8 @@ class ScannerActivity : BaseActivity() {
         qrFlowJob = null
         serialManager.setRfidCallback(callback = null)
         serialManager.setQrCallback(callback = null)
+        rfidCallbackActive = false
+        qrCallbackActive = false
 
         binding.btnToggleRfidFlow.text = "Start flow"
         binding.btnToggleQrFlow.text = "Start flow"
@@ -212,12 +222,14 @@ class ScannerActivity : BaseActivity() {
     /** Callback: assign via [SerialManager.setRfidCallback] to observe, pass `null` to stop and release it. */
     private fun toggleRfidCallback() {
         binding.tvRfidResult.text = "—"
-        if (serialManager.rfidCallback != null) {
+        if (rfidCallbackActive) {
             serialManager.setRfidCallback(callback = null)
+            rfidCallbackActive = false
             binding.btnToggleRfidCallback.text = "Enable callback"
             appendLog("rfidCallback cleared")
             return
         }
+        rfidCallbackActive = true
         binding.btnToggleRfidCallback.text = "Disable callback"
         appendLog("rfidCallback set")
         serialManager.setRfidCallback(override = selectedRfidPort()) { uid ->
@@ -229,17 +241,66 @@ class ScannerActivity : BaseActivity() {
     /** Callback: same set-to-null-to-clear behavior as [toggleRfidCallback], for QR. */
     private fun toggleQrCallback() {
         binding.tvQrResult.text = "—"
-        if (serialManager.qrCallback != null) {
+        if (qrCallbackActive) {
             serialManager.setQrCallback(callback = null)
+            qrCallbackActive = false
             binding.btnToggleQrCallback.text = "Enable callback"
             appendLog("qrCallback cleared")
             return
         }
+        qrCallbackActive = true
         binding.btnToggleQrCallback.text = "Disable callback"
         appendLog("qrCallback set")
         serialManager.setQrCallback(override = selectedQrPort()) { code ->
             binding.tvQrResult.text = code
             appendLog("qrCallback -> $code")
+        }
+    }
+
+    /** Manual recovery: escalates through the SDK's eviction/reset ladder against the resolved RFID port. */
+    private fun runRfidRecovery() {
+        appendLog("rfidRecovery() running…")
+        activityScope.launch {
+            val recovered = serialManager.rfidRecovery(override = selectedRfidPort())
+            appendLog("rfidRecovery() -> $recovered")
+        }
+    }
+
+    /** Manual recovery: same as [runRfidRecovery], for QR. */
+    private fun runQrRecovery() {
+        appendLog("qrRecovery() running…")
+        activityScope.launch {
+            val recovered = serialManager.qrRecovery(override = selectedQrPort())
+            appendLog("qrRecovery() -> $recovered")
+        }
+    }
+
+    /** Is the resolved RFID port healthy right now — no recovery attempted, just a status check. */
+    private fun checkRfidHealth() {
+        activityScope.launch {
+            val healthy = serialManager.checkRfidHealth(override = selectedRfidPort())
+            appendLog("checkRfidHealth() -> $healthy")
+        }
+    }
+
+    /** Same as [checkRfidHealth], for QR. */
+    private fun checkQrHealth() {
+        activityScope.launch {
+            val healthy = serialManager.checkQrHealth(override = selectedQrPort())
+            appendLog("checkQrHealth() -> $healthy")
+        }
+    }
+
+    /**
+     * SV023 hardware ping — round-trip time to the QR scanner, independent of
+     * whether a flow/callback is active. QR-only: there's no RFID equivalent
+     * in the SDK.
+     */
+    private fun pingQr() {
+        appendLog("pingQr() running…")
+        activityScope.launch {
+            val elapsedMs = serialManager.pingQr()
+            appendLog("pingQr() -> ${elapsedMs?.let { "${it}ms" } ?: "no ack"}")
         }
     }
 

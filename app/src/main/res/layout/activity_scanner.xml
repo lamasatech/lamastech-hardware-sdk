@@ -133,6 +133,34 @@
                         android:text="Enable callback" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <Button
+                        android:id="@+id/btnRfidRecovery"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:text="Recovery" />
+
+                    <Button
+                        android:id="@+id/btnRfidHealth"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:text="Check health" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/tvRfidResult"
                     android:layout_width="match_parent"
@@ -258,6 +286,45 @@
                         android:textAllCaps="false"
                         android:textSize="12sp"
                         android:text="Enable callback" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <Button
+                        android:id="@+id/btnQrRecovery"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:text="Recovery" />
+
+                    <Button
+                        android:id="@+id/btnQrHealth"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:text="Check health" />
+
+                    <Button
+                        android:id="@+id/btnQrPing"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:text="Ping" />
                 </LinearLayout>
 
                 <TextView

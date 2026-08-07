@@ -912,7 +912,7 @@ class SerialManager(context: Context? = null)
 ```
 Create one `SerialManager` per screen/session that needs scanning. Passing `context` (typically the ApplicationContext).
 
-Port and baud rate are auto-detected from the port the running device model declares (see [Supported Devices](#supported-devices-1) below for which models declare which). If a model doesn't declare that capability and no override was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
+Port and baud rate are auto-detected from the port the running device model declares (see [Supported Devices](#supported-devices-1) below for which models declare which). If a model doesn't declare that capability and no config was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
 
 ---
 
@@ -957,9 +957,6 @@ lifecycleScope.launch {
 ---
 
 ```kotlin
-val rfidCallback: ScanCallback? // read-only; set via setRfidCallback
-val qrCallback: ScanCallback?   // read-only; set via setQrCallback
-
 fun setRfidCallback(config: SerialPortConfig? = null, watchScope: CoroutineScope? = null, callback: ScanCallback?)
 fun setQrCallback(config: SerialPortConfig? = null, watchScope: CoroutineScope? = null, callback: ScanCallback?)
 ```
@@ -979,18 +976,7 @@ serialManager.setRfidCallback(callback = null)
 ```kotlin
 fun serialFlow(path: String, baudRate: Int): SharedFlow<String>
 ```
-The generic counterpart to `rfidFlow`/`qrFlow` for an arbitrary serial device that isn't this model's declared RFID/QR port — e.g. a third peripheral, or a port found via `getPorts()` below.
-
-```kotlin
-suspend fun getPorts(rfidOverride: SerialPortConfig? = null, qrOverride: SerialPortConfig? = null): List<SerialPortConfig>
-```
-Every serial port path currently present on the device, each paired with a baud rate — the RFID/QR ports get their resolved baud, everything else falls back to a default guess. Useful for building a manual port-picker UI (see the demo app's `ScannerActivity`).
-
-```kotlin
-fun SerialManager.Companion.recommendedRfidPort(): SerialPortConfig?
-suspend fun SerialManager.Companion.recommendedQrPort(): SerialPortConfig?
-```
-The RFID/QR port this device model declares, without needing an instance — the same default `config = null` resolves to. Handy for pre-filling a settings screen. `recommendedQrPort` is `suspend` because its last-resort fallback can require real hardware probing.
+The generic counterpart to `rfidFlow`/`qrFlow` for an arbitrary serial device that isn't this model's declared RFID/QR port — e.g. a third peripheral, addressed directly by its path/baud.
 
 ---
 
@@ -999,23 +985,15 @@ The RFID/QR port this device model declares, without needing an instance — the
 For building your own diagnostics screen or isolating a specific failure mode.
 
 ```kotlin
-suspend fun serialRecovery(config: String): Boolean
-suspend fun qrRecovery(config: SerialPortConfig? = null): Boolean
-suspend fun rfidRecovery(config: SerialPortConfig? = null): Boolean
+suspend fun serialRecovery(): Boolean
+suspend fun qrRecovery(): Boolean
+suspend fun rfidRecovery(): Boolean
 
-suspend fun checkPortHealth(path: String): Boolean
-suspend fun checkQrHealth(config: SerialPortConfig? = null): Boolean
-suspend fun checkRfidHealth(config: SerialPortConfig? = null): Boolean
+suspend fun checkPortHealth(): Boolean
+suspend fun checkQrHealth(): Boolean
+suspend fun checkRfidHealth(): Boolean
 ```
 `serialRecovery`/`qrRecovery`/`rfidRecovery` escalate through the SDK's recovery ladder (evicting whatever else is holding the port, then progressively resetting the USB topology if the port itself has gone dark) until the port comes back healthy or every tier has been tried. `checkPortHealth`/`checkQrHealth`/`checkRfidHealth` report whether a port is healthy right now, without attempting any recovery. Both need `context` to have been supplied at construction; they return `false` without it.
-
-A handful of individual recovery tiers (`fastRecovery`, `slowRecovery`, `busyBoxRecovery`, `driverRebindRecovery`, `usbAuthorizeRecovery`, `parentHubRebindRecovery`, `usbHostRebindRecovery`) are also available for isolating exactly one tier at a time — mainly useful when validating recovery behavior against real hardware rather than in everyday app code.
-
-```kotlin
-val lastQrError: ReaderError?
-val qrReaderLatencies: Map<String, Long>
-```
-`lastQrError` surfaces *why* QR reading isn't currently working (permission/busy/gone/unsupported/timeout), aggregated across whichever transports are active — diagnostic only, it doesn't change what `readQr`/`qrFlow`/the QR callback deliver. `qrReaderLatencies` reports scan-to-decode latency per active QR transport, for comparing transports/models during testing.
 
 ---
 
@@ -1067,7 +1045,7 @@ class ScannerExampleActivity : AppCompatActivity() {
 }
 ```
 
-A complete working example is also in this repo's demo app: `ScannerActivity` (`:app` module, `com.lamasatech.samples` package), reachable from the "RFID / QR Sample" tile on the app's home screen. It exercises all three read patterns (one-shot, `Flow`, callback) for both RFID and QR, plus manual port/baud override.
+A complete working example is also in this repo's demo app: `ScannerActivity` (`:app` module, `com.lamasatech.samples` package), reachable from the "RFID / QR Sample" tile on the app's home screen. It exercises all three read patterns (one-shot, `Flow`, callback) for both RFID and QR, plus manual port/baud config.
 
 ---
 
