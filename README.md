@@ -914,8 +914,6 @@ Create one `SerialManager` per screen/session that needs scanning. Passing `cont
 
 Port and baud rate are auto-detected from the port the running device model declares (see [Supported Devices](#supported-devices-1) below for which models declare which). If a model doesn't declare that capability and no override was given, the corresponding read/flow/callback simply never produces a value — **it does not throw**.
 
-For QR, the declared port isn't trusted blindly: the same physical scanner can enumerate as either `ttyUSB*` or `ttyACM*` depending on which USB personality it boots into, and the two are mutually exclusive on a given unit. If the declared port isn't actually present on the device, the SDK falls back to whichever kind (`ttyUSB*`/`ttyACM*`) really is there.
-
 ---
 
 ```kotlin
