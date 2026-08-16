@@ -368,6 +368,15 @@ Enable or disable gesture navigation. `true` = enable, `false` = disable.
 
 ---
 
+```kotlin
+fun hideStatusBarAndDisableGestureBar(context: Context): Int
+```
+Convenience call for kiosk lockdown — hides the status bar, navigation bar, and gesture bar in
+one call (combines `setStatusBar`, `setNavigationBar`, and `setGestureBar`). Each of the three is
+attempted independently, so a failure on one doesn't prevent the others from running.
+
+---
+
 ### GPIO & Relay Control
 
 ---
@@ -1128,6 +1137,7 @@ The table below shows which functions are available on each device model. **Yes*
 | `setStatusBarDrag` | Yes | Yes | Yes | - |
 | `setNavigationBar` | Yes | Yes | Yes | Yes |
 | `setGestureBar` | Yes | Yes | Yes | Yes |
+| `hideStatusBarAndDisableGestureBar` | Yes | Yes | Yes | Yes |
 
 ### GPIO & Relay
 
