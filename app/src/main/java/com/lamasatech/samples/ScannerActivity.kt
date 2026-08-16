@@ -86,7 +86,7 @@ class ScannerActivity : BaseActivity() {
      * exposes which port it would auto-resolve to on its own (that's an
      * internal implementation detail, not part of its public API), so this
      * can't pre-fill a "recommended" pick the way it used to — leaving a
-     * dropdown at its default still means `override = null` on every call
+     * dropdown at its default still means `config = null` on every call
      * below, which is [SerialManager]'s own "auto-resolve" behavior either
      * way.
      */
@@ -161,7 +161,7 @@ class ScannerActivity : BaseActivity() {
     private fun readRfidOnce() {
         binding.tvRfidResult.text = "Reading…"
         activityScope.launch {
-            val uid = serialManager.readRfid(override = selectedRfidPort())
+            val uid = serialManager.readRfid(config = selectedRfidPort())
             binding.tvRfidResult.text = uid ?: "No RFID scan received"
             appendLog("readRfid() -> ${uid ?: "timeout"}")
         }
@@ -171,7 +171,7 @@ class ScannerActivity : BaseActivity() {
     private fun readQrOnce() {
         binding.tvQrResult.text = "Reading…"
         activityScope.launch {
-            val code = serialManager.readQr(override = selectedQrPort())
+            val code = serialManager.readQr(config = selectedQrPort())
             binding.tvQrResult.text = code ?: "No QR scan received"
             appendLog("readQr() -> ${code ?: "timeout"}")
         }
@@ -191,7 +191,7 @@ class ScannerActivity : BaseActivity() {
         binding.btnToggleRfidFlow.text = "Stop flow"
         appendLog("rfidFlow() started")
         rfidFlowJob = activityScope.launch {
-            serialManager.rfidFlow(override = selectedRfidPort()).collect { uid ->
+            serialManager.rfidFlow(config = selectedRfidPort()).collect { uid ->
                 binding.tvRfidResult.text = uid
                 appendLog("rfidFlow() -> $uid")
             }
@@ -212,7 +212,7 @@ class ScannerActivity : BaseActivity() {
         binding.btnToggleQrFlow.text = "Stop flow"
         appendLog("qrFlow() started")
         qrFlowJob = activityScope.launch {
-            serialManager.qrFlow(override = selectedQrPort()).collect { code ->
+            serialManager.qrFlow(config = selectedQrPort()).collect { code ->
                 binding.tvQrResult.text = code
                 appendLog("qrFlow() -> $code")
             }
@@ -232,7 +232,7 @@ class ScannerActivity : BaseActivity() {
         rfidCallbackActive = true
         binding.btnToggleRfidCallback.text = "Disable callback"
         appendLog("rfidCallback set")
-        serialManager.setRfidCallback(override = selectedRfidPort()) { uid ->
+        serialManager.setRfidCallback(config = selectedRfidPort()) { uid ->
             binding.tvRfidResult.text = uid
             appendLog("rfidCallback -> $uid")
         }
@@ -251,7 +251,7 @@ class ScannerActivity : BaseActivity() {
         qrCallbackActive = true
         binding.btnToggleQrCallback.text = "Disable callback"
         appendLog("qrCallback set")
-        serialManager.setQrCallback(override = selectedQrPort()) { code ->
+        serialManager.setQrCallback(config = selectedQrPort()) { code ->
             binding.tvQrResult.text = code
             appendLog("qrCallback -> $code")
         }
@@ -261,7 +261,7 @@ class ScannerActivity : BaseActivity() {
     private fun runRfidRecovery() {
         appendLog("rfidRecovery() running…")
         activityScope.launch {
-            val recovered = serialManager.rfidRecovery(override = selectedRfidPort())
+            val recovered = serialManager.rfidRecovery(config = selectedRfidPort())
             appendLog("rfidRecovery() -> $recovered")
         }
     }
@@ -270,7 +270,7 @@ class ScannerActivity : BaseActivity() {
     private fun runQrRecovery() {
         appendLog("qrRecovery() running…")
         activityScope.launch {
-            val recovered = serialManager.qrRecovery(override = selectedQrPort())
+            val recovered = serialManager.qrRecovery(config = selectedQrPort())
             appendLog("qrRecovery() -> $recovered")
         }
     }
@@ -278,7 +278,7 @@ class ScannerActivity : BaseActivity() {
     /** Is the resolved RFID port healthy right now — no recovery attempted, just a status check. */
     private fun checkRfidHealth() {
         activityScope.launch {
-            val healthy = serialManager.checkRfidHealth(override = selectedRfidPort())
+            val healthy = serialManager.checkRfidHealth(config = selectedRfidPort())
             appendLog("checkRfidHealth() -> $healthy")
         }
     }
@@ -286,7 +286,7 @@ class ScannerActivity : BaseActivity() {
     /** Same as [checkRfidHealth], for QR. */
     private fun checkQrHealth() {
         activityScope.launch {
-            val healthy = serialManager.checkQrHealth(override = selectedQrPort())
+            val healthy = serialManager.checkQrHealth(config = selectedQrPort())
             appendLog("checkQrHealth() -> $healthy")
         }
     }
