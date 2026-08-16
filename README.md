@@ -20,6 +20,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
   - [Ethernet](#ethernet)
   - [USB & Storage](#usb--storage)
   - [Screenshot](#screenshot)
+  - [Logs](#logs)
   - [Firmware & System](#firmware--system)
   - [System Settings](#system-settings)
 - [Serial (RFID & QR)](#serial-rfid--qr)
@@ -826,6 +827,40 @@ Take a screenshot and return it as a Bitmap.
 
 ---
 
+### Logs
+
+---
+
+```kotlin
+fun pullSystemLogs(filePath: String): Int
+```
+Capture the device's system logcat (point-in-time) and write it to `filePath`. Returns `0` on success, refer to error code otherwise.
+
+| Parameter | Description |
+|:--|:--|
+| filePath | File path to save the captured log to |
+
+> On SMDT-family devices (S3568, Zentron), this uses the vendor SDK's `smdtGetSystemLogcat`, which appends the literal string `"logcat.txt"` onto whatever `filePath` you pass rather than joining it as a path — the file actually written is `"${filePath}logcat.txt"`, not `filePath` itself.
+
+---
+
+```kotlin
+fun getProcessLogcat(onLine: (String) -> Unit): AutoCloseable
+```
+Stream live logcat output line-by-line via `onLine` until the returned handle is closed. Unlike `pullSystemLogs` (a point-in-time capture to a file), this is a continuous feed that never returns on its own.
+
+| Parameter | Description |
+|:--|:--|
+| onLine | Invoked once per captured log line |
+
+```kotlin
+val handle = device.getProcessLogcat { line -> /* handle each line */ }
+// later
+handle.close() // stop the capture
+```
+
+---
+
 ### Firmware & System
 
 ---
@@ -1110,8 +1145,8 @@ The table below shows which functions are available on each device model. **Yes*
 |:--|:--:|:--:|:--:|:--:|
 | `setStatusBar` | Yes | Yes | Yes | Yes |
 | `setStatusBarDrag` | Yes | Yes | Yes | - |
-| `setNavigationBar` | Yes | Yes | Yes | - |
-| `setGestureBar` | Yes | Yes | Yes | - |
+| `setNavigationBar` | Yes | Yes | Yes | Yes |
+| `setGestureBar` | Yes | Yes | Yes | Yes |
 
 ### GPIO & Relay
 
@@ -1198,6 +1233,13 @@ The table below shows which functions are available on each device model. **Yes*
 |:--|:--:|:--:|:--:|:--:|
 | `getScreenShot` | Yes | Yes | Yes | - |
 | `getScreenShotBitmap` | Yes | Yes | Yes | - |
+
+### Logs
+
+| Method | RK3576 | RK3568 | S3568 | Zentron |
+|:--|:--:|:--:|:--:|:--:|
+| `pullSystemLogs` | Yes | Yes | Yes | Yes |
+| `getProcessLogcat` | Yes | Yes | Yes | Yes |
 
 ### Firmware & System
 
