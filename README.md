@@ -372,8 +372,7 @@ Enable or disable gesture navigation. `true` = enable, `false` = disable.
 fun hideStatusBarAndDisableGestureBar(context: Context): Int
 ```
 Convenience call for kiosk lockdown — hides the status bar, navigation bar, and gesture bar in
-one call (combines `setStatusBar`, `setNavigationBar`, and `setGestureBar`). Each of the three is
-attempted independently, so a failure on one doesn't prevent the others from running.
+one call.
 
 ---
 
