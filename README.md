@@ -376,6 +376,14 @@ one call.
 
 ---
 
+```kotlin
+fun showStatusBarAndEnableGestureBar(context: Context): Int
+```
+Reverse of `hideStatusBarAndDisableGestureBar` — shows the status bar, navigation bar, and gesture
+bar in one call.
+
+---
+
 ### GPIO & Relay Control
 
 ---
@@ -1137,6 +1145,7 @@ The table below shows which functions are available on each device model. **Yes*
 | `setNavigationBar` | Yes | Yes | Yes | Yes |
 | `setGestureBar` | Yes | Yes | Yes | Yes |
 | `hideStatusBarAndDisableGestureBar` | Yes | Yes | Yes | Yes |
+| `showStatusBarAndEnableGestureBar` | Yes | Yes | Yes | Yes |
 
 ### GPIO & Relay
 
