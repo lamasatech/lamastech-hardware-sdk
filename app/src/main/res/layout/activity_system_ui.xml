@@ -109,6 +109,22 @@
                 android:checked="true" />
         </LinearLayout>
 
+        <!-- Kiosk Lockdown -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Kiosk Lockdown"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnHideStatusAndGestureBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Hide Status/Nav/Gesture Bar" />
+
         <!-- System Logs -->
         <TextView
             android:layout_width="wrap_content"

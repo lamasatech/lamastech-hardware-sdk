@@ -23,6 +23,9 @@ class SystemUiActivity : BaseActivity() {
         b.switchGestureBar.setOnCheckedChangeListener { _, isChecked ->
             safeCall(b.tvResult) { device?.setGestureBar(isChecked) }
         }
+        b.btnHideStatusAndGestureBar.setOnClickListener {
+            safeCall(b.tvResult) { device?.hideStatusBarAndDisableGestureBar(this) }
+        }
         b.btnPullSystemLogs.setOnClickListener {
             safeCall(b.tvResult) {
                 val file = File(filesDir, "pulled_syslog.txt")
