@@ -840,25 +840,6 @@ Capture the device's system logcat (point-in-time) and write it to `filePath`. R
 |:--|:--|
 | filePath | File path to save the captured log to |
 
-> On SMDT-family devices (S3568, Zentron), this uses the vendor SDK's `smdtGetSystemLogcat`, which appends the literal string `"logcat.txt"` onto whatever `filePath` you pass rather than joining it as a path — the file actually written is `"${filePath}logcat.txt"`, not `filePath` itself.
-
----
-
-```kotlin
-fun getProcessLogcat(onLine: (String) -> Unit): AutoCloseable
-```
-Stream live logcat output line-by-line via `onLine` until the returned handle is closed. Unlike `pullSystemLogs` (a point-in-time capture to a file), this is a continuous feed that never returns on its own.
-
-| Parameter | Description |
-|:--|:--|
-| onLine | Invoked once per captured log line |
-
-```kotlin
-val handle = device.getProcessLogcat { line -> /* handle each line */ }
-// later
-handle.close() // stop the capture
-```
-
 ---
 
 ### Firmware & System
@@ -1239,7 +1220,6 @@ The table below shows which functions are available on each device model. **Yes*
 | Method | RK3576 | RK3568 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `pullSystemLogs` | Yes | Yes | Yes | Yes |
-| `getProcessLogcat` | Yes | Yes | Yes | Yes |
 
 ### Firmware & System
 
