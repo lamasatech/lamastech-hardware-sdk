@@ -861,8 +861,6 @@ Capture the device's system logcat (point-in-time) and write it to `filePath`. R
 
 ### Diagnostics
 
-Diagnose boot hangs, crashes, and hardware/network health after a reboot. All of these need root access; most write their output to a file rather than returning it directly.
-
 ---
 
 ```kotlin
