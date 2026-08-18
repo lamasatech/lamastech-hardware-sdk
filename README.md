@@ -21,6 +21,7 @@ Android SDK for controlling Lamasa kiosk hardware. Provides a unified API for de
   - [USB & Storage](#usb--storage)
   - [Screenshot](#screenshot)
   - [Logs](#logs)
+  - [Diagnostics](#diagnostics)
   - [Firmware & System](#firmware--system)
   - [System Settings](#system-settings)
 - [Serial (RFID & QR)](#serial-rfid--qr)
@@ -855,6 +856,262 @@ Capture the device's system logcat (point-in-time) and write it to `filePath`. R
 | Parameter | Description |
 |:--|:--|
 | filePath | File path to save the captured log to |
+
+---
+
+### Diagnostics
+
+Diagnose boot hangs, crashes, and hardware/network health after a reboot. All of these need root access; most write their output to a file rather than returning it directly.
+
+---
+
+```kotlin
+fun pullDropBoxEntries(filePath: String): Int
+```
+Dump Android's DropBoxManager entries (crash, ANR, watchdog, boot events) to `filePath`.
+
+---
+
+```kotlin
+fun pullTombstones(filePath: String): Int
+```
+Copy native crash dumps (`debuggerd` tombstones) to `filePath`.
+
+---
+
+```kotlin
+fun pullAnrTraces(filePath: String): Int
+```
+Copy ANR thread dumps to `filePath`.
+
+---
+
+```kotlin
+fun pullCrashLogs(filePath: String): Int
+```
+Capture only the crash logcat buffer (uncaught exceptions, native crash summaries) to `filePath`.
+
+---
+
+```kotlin
+fun pullBugReport(filePath: String): Int
+```
+Trigger a full `bugreportz` capture (logcat + dropbox + tombstones + dumpsys + kernel log) and copy the resulting archive to `filePath`.
+
+---
+
+```kotlin
+fun pullLastKernelLog(filePath: String): Int
+```
+Read the persisted kernel log from before the last reset — the only source that can capture a hang before Android's framework was far enough along to log anything itself (e.g. stuck on a boot splash).
+
+---
+
+```kotlin
+fun pullCurrentKernelLog(filePath: String): Int
+```
+Capture the current boot's live kernel ring buffer (`dmesg`) to `filePath`.
+
+---
+
+```kotlin
+fun pullLastUserspaceLog(filePath: String): Int
+```
+Read the persisted userspace/logcat log from before the last reset to `filePath` — the logcat-side counterpart of `pullLastKernelLog`.
+
+---
+
+```kotlin
+fun pullBootProgressLog(filePath: String): Int
+```
+Extract boot milestone markers (`preload`, `pms_ready`, `ams_ready`, `enable_screen`, ...) to `filePath` — shows exactly how far boot got before a hang.
+
+---
+
+```kotlin
+fun getBootTimings(): String?
+```
+Report every `ro.boottime.*` property — per-service `init` start timestamps for the current boot.
+
+| Return | Description |
+|:--|:--|
+| String? | Populated on Android 9+ builds with standard AOSP `init`; `null` on older or heavily-forked vendor `init` |
+
+---
+
+```kotlin
+fun getLastBootReason(): String?
+```
+Report why the last boot happened. Falls back to parsing the kernel's own restart-command log line when the platform's boot-reason property is unset.
+
+---
+
+```kotlin
+fun getBootReasonHistory(): String?
+```
+Report the `bootstat`-maintained history of the last few reboot reasons with timestamps.
+
+| Return | Description |
+|:--|:--|
+| String? | Requires Android 9+'s `bootstat` service; `null` on older platforms |
+
+---
+
+```kotlin
+fun pullPowerManagerState(filePath: String): Int
+```
+Dump the power manager's internal state (`dumpsys power`) to `filePath` — wakefulness, whether boot fully completed, plug type, screen state.
+
+---
+
+```kotlin
+fun getPowerSupplyStatus(): String?
+```
+Report power/charger state. Combines raw driver `power_supply` data with the OS-level battery summary, so it works even on boards whose kernel exposes no power sysfs nodes.
+
+---
+
+```kotlin
+fun getWatchdogBootStatus(): String?
+```
+Read the Linux hardware watchdog device's boot status, if exposed. A nonzero value means the previous boot ended via a watchdog reset rather than a clean reboot.
+
+---
+
+```kotlin
+fun getThermalZones(): String?
+```
+Read every thermal sensor's type and temperature.
+
+---
+
+```kotlin
+fun getCpuThrottleState(): String?
+```
+Report each CPU core's current clock speed against its maximum — whether thermal/power throttling is actively reducing performance right now.
+
+---
+
+```kotlin
+fun getKernelTaintFlags(): String?
+```
+Read the kernel taint flags. A nonzero value indicates the kernel has loaded an out-of-tree module or hit another taint condition since boot.
+
+---
+
+```kotlin
+fun getDataPartitionMountMode(): String?
+```
+Report the current mount line for `/data` — detects a silent read-only remount, a common symptom of eMMC/filesystem corruption.
+
+---
+
+```kotlin
+fun getStorageWearInfo(): String?
+```
+Read eMMC wear indicators (`life_time`, `pre_eol_info`) — an early-warning signal before corruption sets in.
+
+---
+
+```kotlin
+fun pullDiskStats(filePath: String): Int
+```
+Dump free-space and write-latency statistics (`/data`, `/cache`, `/system`) to `filePath`. A nearly-full `/data` partition is a common cause of hangs and crash loops.
+
+---
+
+```kotlin
+fun pullFilesystemErrors(filePath: String): Int
+```
+Copy every filesystem-corruption/storage-I/O-error kernel log line to `filePath`.
+
+---
+
+```kotlin
+fun pullMemoryInfo(filePath: String): Int
+```
+Dump system-wide memory usage (`dumpsys meminfo`) to `filePath`.
+
+---
+
+```kotlin
+fun pullMemoryPressureEvents(filePath: String): Int
+```
+Copy every low-memory-killer/OOM-killer kernel log line to `filePath` — direct evidence of memory pressure causing a crash loop.
+
+---
+
+```kotlin
+fun getInitServiceStates(): String?
+```
+Report the state (`running`, `stopped`, `restarting`, ...) of every `init`-managed system service. A service stuck restarting outside its expected lifecycle is a direct signal of where boot is failing.
+
+---
+
+```kotlin
+fun getEncryptionState(): String?
+```
+Report the device's storage encryption state and type.
+
+---
+
+```kotlin
+fun getSystemLoadAverage(): String?
+```
+Report the kernel's load average and system uptime — a coarse, general-purpose health signal.
+
+---
+
+```kotlin
+fun pullSelinuxDenials(filePath: String): Int
+```
+Copy every SELinux denial (`avc: denied`) from the current kernel log to `filePath` — a policy silently blocking something is a common, otherwise-invisible cause of stuck or partially-broken behavior.
+
+---
+
+```kotlin
+fun pullDisplayTimingStats(filePath: String): Int
+```
+Dump display frame-timing statistics (`dumpsys SurfaceFlinger --timestats -dump`) to `filePath` — useful for detecting a hung or severely janky display.
+
+---
+
+```kotlin
+fun pullConnectivityInfo(filePath: String): Int
+```
+Dump `dumpsys connectivity` (active network, transport type, validated state) to `filePath`.
+
+---
+
+```kotlin
+fun getNetworkInterfaceState(): String?
+```
+Read raw `ip addr`/`ip route` output — ground-truth interface/IP/gateway state independent of Android's `ConnectivityManager` bookkeeping.
+
+---
+
+```kotlin
+fun pullWifiInfo(filePath: String): Int
+```
+Dump `dumpsys wifi` (supplicant state, RSSI, last disconnect reason) to `filePath`.
+
+---
+
+```kotlin
+fun getInternetConnectivityStatus(context: Context): String?
+```
+Report the active network's transport and whether the OS considers it to have validated internet access — a stronger signal than "an interface is up."
+
+---
+
+```kotlin
+fun pullProcessExitReasons(context: Context, filePath: String): Int
+```
+Write this app's historical process exit reasons (crash/ANR/low-memory/native-crash) to `filePath`.
+
+| Return | Description |
+|:--|:--|
+| Int | `0` on success, `-1` below API 30 or on failure |
 
 ---
 
