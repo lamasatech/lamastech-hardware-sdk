@@ -122,6 +122,27 @@ fun reboot(context: Context): Int
 ```
 Restart the device immediately.
 
+| Return | Description |
+|:--|:--|
+| `0` | A reboot mechanism was accepted. This does not guarantee the device will actually restart — no call can promise that, since a successful reboot kills the process before it can report anything. Use `getLastRebootAttempt`/`getLastRebootWasClean` after the fact to check. |
+| `-1` | No mechanism could be issued at all (e.g. no root available, no vendor service present). |
+
+> **Note:** return values are now uniform across all models. If your code checks for `== 1` on some models, update it to check for `== 0`.
+
+---
+
+```kotlin
+fun getLastRebootAttempt(context: Context): String?
+```
+Report the most recent reboot attempt — which mechanism was used and its outcome. `null` if none has ever been made.
+
+---
+
+```kotlin
+fun getLastRebootWasClean(context: Context): Boolean?
+```
+Report whether the reboot that preceded this boot ran cleanly. `true`/`false` once a reboot has been observed, `null` if none has been yet.
+
 ---
 
 ```kotlin
@@ -132,13 +153,39 @@ Shut down the device.
 ---
 
 ```kotlin
-fun scheduleReboot(context: Context, delay: Long)
+fun scheduleReboot(context: Context, delay: Long, slot: String = "default")
+fun scheduleReboot(context: Context, delay: Long, unit: TimeUnit, slot: String = "default")
 ```
 Schedule a reboot after a delay.
 
 | Parameter | Description |
 |:--|:--|
-| delay | Delay in **seconds** |
+| delay | Delay in **milliseconds** (or use the `TimeUnit` overload to be explicit) |
+| unit | Unit for `delay`, if using the explicit overload |
+| slot | Identifies this schedule, so more than one reboot can be scheduled independently — e.g. `slot = "1am"` and `slot = "3am"` don't replace each other. Defaults to `"default"` |
+
+---
+
+```kotlin
+fun cancelScheduledReboot(context: Context, slot: String = "default")
+```
+Cancel a previously scheduled reboot for `slot`.
+
+---
+
+```kotlin
+fun getScheduledRebootRecord(context: Context, slot: String = "default"): ScheduledRebootRecord?
+```
+Look up the status of a scheduled reboot for `slot` — when it was scheduled, when it fired, and its outcome. `null` if nothing has ever been scheduled for that slot.
+
+```kotlin
+data class ScheduledRebootRecord(
+    val slot: String,
+    val scheduledAtMillis: Long,
+    val firedAtMillis: Long?,
+    val outcome: String?
+)
+```
 
 ---
 
@@ -1341,12 +1388,14 @@ A complete working example is also in this repo's demo app: `ScannerActivity` (`
 | Model | Devices |
 |:--|:--|
 | **RK3576** | Any device model containing `RK3576` |
-| **RK3568** | Zentron_5 |
+| **RK3566** | Zentron_5 |
 | **S3568** | VersiV1s3568, VersiV2s3568, MuroDv1s3568, MuroDv2s3568, CanvasV2s3568 |
 | **Zentron** | rk3288, LT-Zentron8, LT-Zentron15, LD-AITemp |
 | **Zentron21** | Zentron_21 |
 
 The SDK auto-detects the device model at runtime. You do not need to specify the model manually.
+
+> **Note:** `ModelType.RK3568` was renamed to `ModelType.RK3566` (Zentron_5's actual chip). The old name is kept as a deprecated alias, so existing code referencing `ModelType.RK3568` keeps working.
 
 ---
 
@@ -1356,7 +1405,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Power
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `reboot` | Yes | Yes | Yes | Yes |
 | `turnOff` | Yes | Yes | Yes | Yes |
@@ -1366,7 +1415,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Display & Brightness
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `setBrightness` | Yes | Yes | Yes | Yes |
 | `setLcdBrightness` | Yes | - | Yes | - |
@@ -1381,7 +1430,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### LED
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `toggleBlueLight` | - | Yes | Yes | Yes |
 | `toggleRedLight` | - | Yes | Yes | Yes |
@@ -1393,7 +1442,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### System UI
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `setStatusBar` | Yes | Yes | Yes | Yes |
 | `setStatusBarDrag` | Yes | Yes | Yes | - |
@@ -1404,7 +1453,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### GPIO & Relay
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `getIOPortStatus` | Yes | Yes | Yes | Yes |
 | `getGpioDirection` | Yes | - | Yes | Yes |
@@ -1418,7 +1467,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Package Management
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `silentInstall` | Yes | Yes | Yes | Yes |
 | `silentUninstall` | Yes | Yes | Yes | Yes |
@@ -1426,7 +1475,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Launcher & Boot App
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `setDefaultLauncher` | Yes | Yes | Yes | Yes |
 | `getDefaultLauncher` | Yes | Yes | Yes | Yes |
@@ -1437,7 +1486,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Network
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `netGetCurrentNetType` | Yes | Yes | Yes | Yes |
 | `netGetMacAddress` | Yes | Yes | Yes | Yes |
@@ -1464,7 +1513,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Ethernet
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `setEthernetState` | Yes | Yes | Yes | Yes |
 | `getEthernetState` | Yes | Yes | Yes | Yes |
@@ -1475,7 +1524,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### USB, Storage & Misc
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `setUsbPower` | Yes | Yes | Yes | Yes |
 | `getSDCardPath` | Yes | Yes | Yes | Yes |
@@ -1483,20 +1532,20 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### Screenshot
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `getScreenShot` | Yes | Yes | Yes | - |
 | `getScreenShotBitmap` | Yes | Yes | Yes | - |
 
 ### Logs
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `pullSystemLogs` | Yes | Yes | Yes | Yes |
 
 ### Firmware & System
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `updateFirmware` | Yes | Yes | Yes | - |
 | `setTimeZone` | Yes | Yes | Yes | Yes |
@@ -1506,7 +1555,7 @@ The table below shows which functions are available on each device model. **Yes*
 
 ### System Settings
 
-| Method | RK3576 | RK3568 | S3568 | Zentron |
+| Method | RK3576 | RK3566 | S3568 | Zentron |
 |:--|:--:|:--:|:--:|:--:|
 | `sysSettingPut/Get` | Yes | Yes | Yes | Yes |
 | `secureSettingPut/Get` | Yes | Yes | Yes | Yes |
@@ -1527,7 +1576,7 @@ Straight from `ModelType`: every declared model and the RFID/QR serial port `Ser
 | Visipoint15 | `Visipoint 15` | `/dev/ttyS4` @ 115200 | - |
 | DefaultSMDT | `SMDT` (fallback for unrecognized SMDT devices) | `/dev/ttyS3` @ 9600 | - |
 | S3568 | `VersiV1s3568`, `VersiV2s3568`, `MuroDv1s3568`, `MuroDv2s3568`, `CanvasV2s3568`, `MuroM2-43-V3s3568` | - | - |
-| RK3568 | `Zentron_5` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
+| RK3566 | `Zentron_5` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
 | RK3576 | Any model containing `RK3576`, or `LT-ACCRK3576-poe` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
 
 ---
