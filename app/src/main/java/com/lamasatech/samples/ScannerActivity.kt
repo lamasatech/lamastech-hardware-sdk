@@ -82,13 +82,13 @@ class ScannerActivity : BaseActivity() {
 
     /**
      * Populates both port/baud dropdown pairs, defaulting each to the first
-     * port [SerialPortFinder.find] turns up. [SerialManager] no longer
-     * exposes which port it would auto-resolve to on its own (that's an
-     * internal implementation detail, not part of its public API), so this
-     * can't pre-fill a "recommended" pick the way it used to — leaving a
-     * dropdown at its default still means `config = null` on every call
-     * below, which is [SerialManager]'s own "auto-resolve" behavior either
-     * way.
+     * port [SerialPortFinder.find] turns up, and shows this device's actual
+     * recommended port/baud underneath each baud dropdown via
+     * [SerialManager.recommendedRfidPort]/[SerialManager.recommendedQrPort] —
+     * the same default `config = null` already resolves to on every call
+     * below. Picking a value from the dropdowns overrides it; leaving the
+     * dropdowns at their defaults still means `config = null`, i.e.
+     * [SerialManager]'s own auto-resolve.
      */
     private fun setupPortDropdowns() {
         val ports = SerialPortFinder.find()
@@ -105,11 +105,22 @@ class ScannerActivity : BaseActivity() {
 
         binding.spinnerRfidPort.setText(ports.firstOrNull().orEmpty(), false)
         binding.spinnerRfidBaud.setText("9600", false)
-        binding.tvRfidPortHint.text = "Pick a port manually, or leave as-is to let SerialManager auto-detect its own default"
-
         binding.spinnerQrPort.setText(ports.firstOrNull().orEmpty(), false)
         binding.spinnerQrBaud.setText("9600", false)
-        binding.tvQrPortHint.text = "Pick a port manually, or leave as-is to let SerialManager auto-detect its own default"
+
+        // recommendedRfidPort() is a plain synchronous call; recommendedQrPort() is suspend
+        // because its last-resort tier can require real hardware detection (see its own doc).
+        binding.tvRfidPortHint.text = recommendedHintText(SerialManager.recommendedRfidPort())
+        activityScope.launch {
+            binding.tvQrPortHint.text = recommendedHintText(SerialManager.recommendedQrPort())
+        }
+    }
+
+    /** Shared wording for [tvRfidPortHint]/[tvQrPortHint] below each baud dropdown. */
+    private fun recommendedHintText(recommended: SerialPortConfig?): String = if (recommended != null) {
+        "Recommended for this device: ${recommended.path} @ ${recommended.baudRate} — pick a port/baud above to override"
+    } else {
+        "This device declares no default port for this capability — pick one manually, or leave unset to get no scans rather than a throw"
     }
 
     private fun selectedRfidPort(): SerialPortConfig? {
