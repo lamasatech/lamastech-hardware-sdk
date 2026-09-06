@@ -110,6 +110,53 @@
             android:layout_height="wrap_content"
             android:text="Set Auto Power On/Off (Mon-Fri, 8:00-22:00)" />
 
+        <CheckBox
+            android:id="@+id/cbAutoPowerEnable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable"
+            android:checked="true"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etAutoWeek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Week mask Sun-Sat, e.g. 1,1,1,1,1,0,0 (blank = every day)"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/etAutoOnTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Power on time HH:mm (default: 08:00)"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/etAutoOffTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Power off time HH:mm (default: 22:00)"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnAutoPowerCustom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set Custom Auto Power Schedule" />
+
+        <Button
+            android:id="@+id/btnAutoPowerDisable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disable Auto Power On/Off" />
+
+        <Button
+            android:id="@+id/btnGetAutoPowerSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Auto Power Schedule" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
