@@ -192,12 +192,17 @@ data class ScheduledRebootRecord(
 ```kotlin
 fun setTurnOffOnAlarm(offTime: String, onTime: String)
 ```
-Set a daily power off/on schedule.
+Arm a **one-shot** power off/on pair: fires once at the next occurrence of `offTime`/`onTime` and does not recur. For a recurring weekly schedule, use `setAutoPowerOnOff` below instead.
 
 | Parameter | Description |
 |:--|:--|
 | offTime | Turn off time in 24h format, e.g. `"22:00"` |
 | onTime | Turn on time in 24h format, e.g. `"08:00"` |
+
+> **⚠️ Scheduling margins.** For a schedule to arm reliably: set the **off-time at least 5 minutes
+> ahead of now**, and the **on-time at least 5 minutes after the off-time**. Very tight windows arm
+> inconsistently on some hardware — the device may not power off at all, or only later. These
+> margins apply to `setAutoPowerOnOff` below too.
 
 ---
 
@@ -217,6 +222,40 @@ Set scheduled power on/off with weekly recurrence.
 | week | 7 elements (Sun-Sat), `1` = enabled, `0` = disabled. Example: `intArrayOf(1,1,1,1,1,0,0)` for Mon-Fri |
 | onHour / onMinute | Power on time (24h format) |
 | offHour / offMinute | Power off time (24h format) |
+
+> **Note:** the same 5-minute scheduling margins from `setTurnOffOnAlarm` above apply here too.
+> `setAutoPowerOnOff` also returns `Unit`, so it cannot tell you whether a schedule actually armed.
+> Real-hardware behavior varies by unit/firmware — some boards accept the call but never actually
+> power-cycle. Always confirm with `getAutoPowerSchedule()` below (and, before relying on this in a
+> production kiosk deployment, a physical power-cycle test on your specific unit).
+
+---
+
+```kotlin
+fun getAutoPowerSchedule(): AutoPowerSchedule
+```
+Read back the power off/on pair the device currently has armed, as the device itself reports it — the counterpart to `setAutoPowerOnOff`. Use it to confirm a schedule actually took effect, to show an operator what is armed, or to detect that a schedule has lapsed. Throws `NotSupportedMethodException` on models where the armed schedule can't be read back.
+
+```kotlin
+data class AutoPowerSchedule(
+    val enabled: Boolean,
+    val nextPowerOff: String?,
+    val nextPowerOn: String?,
+)
+```
+
+| Field | Description |
+|:--|:--|
+| enabled | Whether the schedule below is armed. The times persist after a cancel, so this is the authoritative field — check it first. |
+| nextPowerOff | Power-off time, or `null` if never set. **Format varies by model** — see note below. |
+| nextPowerOn | Power-on time, or `null` if never set. **Format varies by model** — see note below. |
+
+> **Note on format:** `nextPowerOff`/`nextPowerOn` are opaque, device-reported display strings, not
+> a single fixed format across models. For example, on `RK3566` they're a resolved absolute
+> timestamp (`"yyyy-MM-dd HH:mm"`); on `Zentron` they're the raw armed time plus its weekday
+> repeat mask (`"HH:mm days=[0,1,2,3,4,5,6]"`, Sun=0). Treat them as text to display to an
+> operator, not as a format to parse — if you need to parse it, check the actual value returned on
+> your target model first.
 
 ---
 
@@ -1410,8 +1449,9 @@ The table below shows which functions are available on each device model. **Yes*
 | `reboot` | Yes | Yes | Yes | Yes |
 | `turnOff` | Yes | Yes | Yes | Yes |
 | `scheduleReboot` | Yes | Yes | Yes | Yes |
-| `setTurnOffOnAlarm` | Yes | - | Yes | Yes |
-| `setAutoPowerOnOff` | Yes | - | Yes | - |
+| `setTurnOffOnAlarm` | Yes | Yes | Yes | Yes |
+| `setAutoPowerOnOff` | Yes | Yes | Yes | Yes |
+| `getAutoPowerSchedule` | - | Yes | - | Yes |
 
 ### Display & Brightness
 
