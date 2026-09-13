@@ -82,7 +82,7 @@ class DisplayActivity : BaseActivity() {
         b.btnSetTimeout.setOnClickListener {
             val timeout = b.etTimeout.text.toString().toIntOrNull() ?: 60000
             safeCall(b.tvResult) {
-                device?.setTimeOut(timeout) { result ->
+                device?.setTimeOut(this, timeout) { result ->
                     runOnUiThread { b.tvResult.text = "Result: $result" }
                 }
             }

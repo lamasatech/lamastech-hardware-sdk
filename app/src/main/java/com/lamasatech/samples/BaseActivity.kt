@@ -2,11 +2,11 @@ package com.lamasatech.samples
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.lamasatech.kioskhardware.products.Device
 import com.lamasatech.kioskhardware.products.DeviceManager
-import com.lamasatech.kioskhardware.products.IDevice
 
 abstract class BaseActivity : AppCompatActivity() {
-    val device: IDevice?
+    val device: Device?
         get() = DeviceManager.instance?.device
 
     override fun onCreate(savedInstanceState: Bundle?) {

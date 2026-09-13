@@ -20,10 +20,10 @@ class AppManagementActivity : BaseActivity() {
             safeCall(b.tvResult) { device?.silentUninstall(pkg) }
         }
         b.btnAllowUninstall.setOnClickListener {
-            safeCall(b.tvResult) { device?.setAllowUninstall(true) }
+            safeCall(b.tvResult) { device?.setAllowUninstall(this, true) }
         }
         b.btnBlockUninstall.setOnClickListener {
-            safeCall(b.tvResult) { device?.setAllowUninstall(false) }
+            safeCall(b.tvResult) { device?.setAllowUninstall(this, false) }
         }
         b.btnSetLauncher.setOnClickListener {
             val pkg = b.etLauncherPkg.text.toString()

@@ -12,40 +12,40 @@ class NetworkActivity : BaseActivity() {
         title = "Network"
 
         // Info
-        b.btnGetNetType.setOnClickListener { safeCall(b.tvResult) { device?.netGetCurrentNetType() } }
-        b.btnGetMacEth0.setOnClickListener { safeCall(b.tvResult) { device?.netGetMacAddress("eth0") } }
-        b.btnGetMacWlan0.setOnClickListener { safeCall(b.tvResult) { device?.netGetMacAddress("wlan0") } }
-        b.btnGetImei.setOnClickListener { safeCall(b.tvResult) { device?.netGetImeiNumber() } }
-        b.btnGetIccid.setOnClickListener { safeCall(b.tvResult) { device?.netGetIccidNumber() } }
-        b.btnGetImsi.setOnClickListener { safeCall(b.tvResult) { device?.netGetImsiNumber() } }
-        b.btnGetWifiRssi.setOnClickListener { safeCall(b.tvResult) { device?.netGetWifiRssi(5) } }
+        b.btnGetNetType.setOnClickListener { safeCall(b.tvResult) { device?.netGetCurrentNetType(this) } }
+        b.btnGetMacEth0.setOnClickListener { safeCall(b.tvResult) { device?.netGetMacAddress(this, "eth0") } }
+        b.btnGetMacWlan0.setOnClickListener { safeCall(b.tvResult) { device?.netGetMacAddress(this, "wlan0") } }
+        b.btnGetImei.setOnClickListener { safeCall(b.tvResult) { device?.netGetImeiNumber(this) } }
+        b.btnGetIccid.setOnClickListener { safeCall(b.tvResult) { device?.netGetIccidNumber(this) } }
+        b.btnGetImsi.setOnClickListener { safeCall(b.tvResult) { device?.netGetImsiNumber(this) } }
+        b.btnGetWifiRssi.setOnClickListener { safeCall(b.tvResult) { device?.netGetWifiRssi(this, 5) } }
 
         // WiFi
         b.btnConnectWifi.setOnClickListener {
             val ssid = b.etSsid.text.toString()
             val password = b.etPassword.text.toString()
-            safeCall(b.tvResult) { device?.netSetWifiConnect(ssid, password, 2, 0, null) }
+            safeCall(b.tvResult) { device?.netSetWifiConnect(this, ssid, password, 2, 0, null) }
         }
-        b.btnEnableHotspot.setOnClickListener { safeCall(b.tvResult) { device?.netSetWifiAp(true) } }
-        b.btnDisableHotspot.setOnClickListener { safeCall(b.tvResult) { device?.netSetWifiAp(false) } }
-        b.btnGetHotspotStatus.setOnClickListener { safeCall(b.tvResult) { device?.netGetWifiAp() } }
+        b.btnEnableHotspot.setOnClickListener { safeCall(b.tvResult) { device?.netSetWifiAp(this, true) } }
+        b.btnDisableHotspot.setOnClickListener { safeCall(b.tvResult) { device?.netSetWifiAp(this, false) } }
+        b.btnGetHotspotStatus.setOnClickListener { safeCall(b.tvResult) { device?.netGetWifiAp(this) } }
 
         // Network Control
         b.btnEnableNetwork.setOnClickListener {
             val type = b.etNetType.text.toString().ifEmpty { "eth0" }
-            safeCall(b.tvResult) { device?.netSetNetWork(type, true) }
+            safeCall(b.tvResult) { device?.netSetNetWork(this, type, true) }
         }
         b.btnDisableNetwork.setOnClickListener {
             val type = b.etNetType.text.toString().ifEmpty { "eth0" }
-            safeCall(b.tvResult) { device?.netSetNetWork(type, false) }
+            safeCall(b.tvResult) { device?.netSetNetWork(this, type, false) }
         }
         b.btnGetNetworkMode.setOnClickListener {
             val type = b.etNetType.text.toString().ifEmpty { "eth0" }
-            safeCall(b.tvResult) { device?.netGetNetWorkModel(type) }
+            safeCall(b.tvResult) { device?.netGetNetWorkModel(this, type) }
         }
         b.btnGetNetworkInfo.setOnClickListener {
             val type = b.etNetType.text.toString().ifEmpty { "eth0" }
-            safeCall(b.tvResult) { device?.netGetNetWorkInf(type) }
+            safeCall(b.tvResult) { device?.netGetNetWorkInf(this, type) }
         }
     }
 }

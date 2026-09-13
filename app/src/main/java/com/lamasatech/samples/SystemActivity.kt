@@ -15,7 +15,7 @@ class SystemActivity : BaseActivity() {
             safeCall(b.tvResult) { device?.updateFirmware(b.etFirmwarePath.text.toString()) }
         }
         b.btnSetTimezone.setOnClickListener {
-            safeCall(b.tvResult) { device?.setTimeZone(b.etTimezone.text.toString().ifEmpty { "Asia/Riyadh" }) }
+            safeCall(b.tvResult) { device?.setTimeZone(this, b.etTimezone.text.toString().ifEmpty { "Asia/Riyadh" }) }
         }
         b.btnGetNtp.setOnClickListener { safeCall(b.tvResult) { device?.getNtpServer() } }
         b.btnSetNtp.setOnClickListener {

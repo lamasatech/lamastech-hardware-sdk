@@ -14,8 +14,8 @@ class EthernetActivity : BaseActivity() {
         b.btnEnableEth.setOnClickListener { safeCall(b.tvResult) { device?.setEthernetState(true) } }
         b.btnDisableEth.setOnClickListener { safeCall(b.tvResult) { device?.setEthernetState(false) } }
         b.btnGetEthState.setOnClickListener { safeCall(b.tvResult) { device?.getEthernetState() } }
-        b.btnGetEthIp.setOnClickListener { safeCall(b.tvResult) { device?.getEthIPAddress() } }
-        b.btnGetEthMac.setOnClickListener { safeCall(b.tvResult) { device?.getEthMacAddress() } }
+        b.btnGetEthIp.setOnClickListener { safeCall(b.tvResult) { device?.getEthIPAddress(this) } }
+        b.btnGetEthMac.setOnClickListener { safeCall(b.tvResult) { device?.getEthMacAddress(this) } }
         b.btnSetStaticIp.setOnClickListener {
             safeCall(b.tvResult) {
                 device?.setEthIPAddress(

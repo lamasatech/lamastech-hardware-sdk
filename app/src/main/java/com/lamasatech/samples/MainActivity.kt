@@ -21,8 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.lamasatech.kioskhardware.products.Device
 import com.lamasatech.kioskhardware.products.DeviceManager
-import com.lamasatech.kioskhardware.products.IDevice
 import com.lamasatech.kioskhardware.products.Model
 import com.lamasatech.samples.databinding.ActivityMainBinding
 import com.lamasatech.samples.databinding.ItemCategoryBinding
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Every field is read independently so one unsupported method doesn't blank out the rest. */
-    private fun buildDeviceInfo(device: IDevice?): CharSequence {
+    private fun buildDeviceInfo(device: Device?): CharSequence {
         val primary = ContextCompat.getColor(this, R.color.primary)
         val secondary = ContextCompat.getColor(this, R.color.text_secondary)
         val text = SpannableStringBuilder()
@@ -101,20 +101,20 @@ class MainActivity : AppCompatActivity() {
             line("Printer", safe { Model.isSupportPrinter })
         }
         section("Network") {
-            line("Current type", safe { device?.netGetCurrentNetType() })
-            line("WiFi MAC", safe { device?.netGetMacAddress("wlan0") })
-            line("WiFi RSSI level", safe { device?.netGetWifiRssi(5) })
-            line("WiFi hotspot", safe { device?.netGetWifiAp() })
+            line("Current type", safe { device?.netGetCurrentNetType(this@MainActivity) })
+            line("WiFi MAC", safe { device?.netGetMacAddress(this@MainActivity, "wlan0") })
+            line("WiFi RSSI level", safe { device?.netGetWifiRssi(this@MainActivity, 5) })
+            line("WiFi hotspot", safe { device?.netGetWifiAp(this@MainActivity) })
             line("Network priority", safe { device?.netGetNetworkPriority()?.joinToString() })
             line("Ethernet state", safe { device?.getEthernetState() })
-            line("Ethernet IP", safe { device?.getEthIPAddress() })
-            line("Ethernet MAC", safe { device?.getEthMacAddress() })
+            line("Ethernet IP", safe { device?.getEthIPAddress(this@MainActivity) })
+            line("Ethernet MAC", safe { device?.getEthMacAddress(this@MainActivity) })
         }
         section("Identifiers") {
             line("Serial number", safe { device?.getSerialNumber() })
-            line("IMEI", safe { device?.netGetImeiNumber() })
-            line("ICCID", safe { device?.netGetIccidNumber() })
-            line("IMSI", safe { device?.netGetImsiNumber() })
+            line("IMEI", safe { device?.netGetImeiNumber(this@MainActivity) })
+            line("ICCID", safe { device?.netGetIccidNumber(this@MainActivity) })
+            line("IMSI", safe { device?.netGetImsiNumber(this@MainActivity) })
         }
         section("Hardware") {
             line("Blue LED supported", safe { device?.isSupportBlue() })
