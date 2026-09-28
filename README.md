@@ -1311,6 +1311,16 @@ lifecycleScope.launch {
 }
 ```
 
+> **📇 RFID UID format (read this before storing UIDs).** The returned value is the card's **full UID as an
+> uppercase hex string** (e.g. `044C5331`, `536B652D020001`), most-significant-byte first. Convert it to
+> decimal or any other format on your side if you need it, and store it as a **string**, not an integer.
+>
+> Serial readers report the UID byte-exact, so leading `00` bytes are preserved (`002AB3C4`). Some units
+> use a **keyboard/ASCII reader that emits the UID as a decimal number** — that reader discards
+> leading-zero bytes before the SDK sees them, so the same card can come back **without** its leading
+> zeros (`2AB3C4`) on those units. Real UIDs are only 4 or 7 bytes, so if you need byte-exact matching
+> across a mixed fleet, **left-pad the hex to 8 or 14 characters** on your side.
+
 ---
 
 ```kotlin
