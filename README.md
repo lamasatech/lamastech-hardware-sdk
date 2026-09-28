@@ -1434,8 +1434,6 @@ A complete working example is also in this repo's demo app: `ScannerActivity` (`
 
 The SDK auto-detects the device model at runtime. You do not need to specify the model manually.
 
-> **Note:** `ModelType.RK3568` was renamed to `ModelType.RK3566` (Zentron_5's actual chip). The old name is kept as a deprecated alias, so existing code referencing `ModelType.RK3568` keeps working.
-
 ---
 
 ## Support Matrix
