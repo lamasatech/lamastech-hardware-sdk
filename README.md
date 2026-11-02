@@ -1371,14 +1371,16 @@ The generic counterpart to `rfidFlow`/`qrFlow` for an arbitrary serial device th
 For building your own diagnostics screen or isolating a specific failure mode.
 
 ```kotlin
-suspend fun serialRecovery(): Boolean
-suspend fun qrRecovery(): Boolean
-suspend fun rfidRecovery(): Boolean
+suspend fun serialRecovery(path: String): Boolean
+suspend fun qrRecovery(config: SerialPortConfig? = null): Boolean
+suspend fun rfidRecovery(config: SerialPortConfig? = null): Boolean
 
-suspend fun checkPortHealth(): Boolean
-suspend fun checkQrHealth(): Boolean
-suspend fun checkRfidHealth(): Boolean
+suspend fun checkPortHealth(path: String): Boolean
+suspend fun checkQrHealth(config: SerialPortConfig? = null): Boolean
+suspend fun checkRfidHealth(config: SerialPortConfig? = null): Boolean
 ```
+`serialRecovery` and `checkPortHealth` take the path of any serial port, e.g. `"/dev/ttyS3"`. The QR and RFID versions use the model's declared port, or the `config` you pass. All of them return `false` if the `SerialManager` was created without a `Context`.
+
 `serialRecovery`/`qrRecovery`/`rfidRecovery` escalate through the SDK's recovery ladder (evicting whatever else is holding the port, then progressively resetting the USB topology if the port itself has gone dark) until the port comes back healthy or every tier has been tried. `checkPortHealth`/`checkQrHealth`/`checkRfidHealth` report whether a port is healthy right now, without attempting any recovery. Both need `context` to have been supplied at construction; they return `false` without it.
 
 ---
