@@ -792,7 +792,10 @@ Get network guard status. Returns `1` = enabled, `0` = disabled.
 ```kotlin
 fun netGetNetworkProtectConfig(): List<String?>?
 ```
-Get network guard config. Returns array: `[type, interval, external IP, internal IP, log path, reboot flag]`.
+Get network guard config. The returned list depends on the model:
+
+- **S3568:** `[type, interval, external IP, internal IP, log path, reboot flag]`
+- **Zentron21:** `[enabled, type, interval (minutes), external IP, internal IP, log path, reboot flag, last status code, check count, repaired count, failed count, status text]`
 
 ---
 
@@ -1551,13 +1554,15 @@ The table below shows which functions are available on each device model. **Yes*
 | `netGetIccidNumber` | Yes | Yes | Yes | Yes |
 | `netGetImsiNumber` | Yes | Yes | Yes | Yes |
 | `setMobileDataEnabled` | Yes | Yes | Yes | Yes |
-| `netSetNetworkProtect` | Yes | Yes | Yes | Yes |
+| `netSetNetworkProtect` | - | - | Yes | - |
 | `netGetNetworkProtectEnable` | - | - | Yes | - |
 | `netGetNetworkProtectConfig` | - | - | Yes | - |
 | `netSetNetworkPriority` | - | - | Yes | - |
 | `netGetNetworkPriority` | - | - | Yes | - |
 | `netSetNetworkMultiEnable` | Yes | Yes | Yes | Yes |
 | `netGetNetworkMultiEnable` | Yes | Yes | Yes | Yes |
+
+Network Guard (`netSetNetworkProtect`, `netGetNetworkProtectEnable`, `netGetNetworkProtectConfig`) is also supported on **Zentron21** (`Zentron_21`) from 0.1.3. Other Zentron models (`rk3288`, `LT-Zentron8`, `LT-Zentron15`, `LD-AITemp`) do not support it.
 
 ### Ethernet
 
