@@ -619,7 +619,7 @@ Set up a daemon to keep an app alive (auto-restart if killed).
 |:--|:--|
 | packageName | Package name to guard. Use `/` to specify class: `com.example.app/.MainActivity` |
 | timeMillisecond | Interval to check and restart the app (in milliseconds) |
-| broadcastEnable | Whether to send a broadcast (`android.app.smdt.PROTECT_CHECK`) when the app exits |
+| broadcastEnable | Whether to send a broadcast when the app exits |
 
 ---
 
@@ -1627,7 +1627,7 @@ Straight from `ModelType`: every declared model and the RFID/QR serial port `Ser
 | Zentron | `rk3288`, `LT-Zentron8`, `LT-Zentron15`, `LD-AITemp`, `rk3288_tdx` | `/dev/ttyS1` @ 9600 | `/dev/ttyACM0` @ 9600 |
 | Zentron21 | `Zentron_21` | `/dev/ttyS3` @ 9600 | `/dev/ttyACM0` @ 9600 |
 | Visipoint15 | `Visipoint 15` | `/dev/ttyS4` @ 115200 | - |
-| DefaultSMDT | `SMDT` (fallback for unrecognized SMDT devices) | `/dev/ttyS3` @ 9600 | - |
+| Default | Any unrecognized model of a supported board (fallback) | `/dev/ttyS3` @ 9600 | - |
 | S3568 | `VersiV1s3568`, `VersiV2s3568`, `MuroDv1s3568`, `MuroDv2s3568`, `CanvasV2s3568`, `MuroM2-43-V3s3568` | - | - |
 | RK3566 | `Zentron_5` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
 | RK3576 | Any model containing `RK3576`, or `LT-ACCRK3576-poe` | `/dev/ttyS3` @ 9600 | `/dev/ttyUSB0` @ 115200 |
